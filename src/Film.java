@@ -4,15 +4,20 @@ public class Film {
 	protected int pretFilm;
 	private int nrCopii;
 	private int anProductie;
-	private String nume;
+	private String numeFilm;
 	private CategorieFilm categorieFilm;
 
 
-	public Film(int nrCopii, int anProductie, String nume, CategorieFilm categorieFilm) {
+	public Film(int nrCopii, int anProductie, String numeFilm, CategorieFilm categorieFilm) {
 		this.nrCopii = nrCopii;
 		this.anProductie = anProductie;
-		this.nume = nume;
+		this.numeFilm = numeFilm;
 		this.categorieFilm = categorieFilm;
+	}
+
+	@Override
+	public String toString() {
+		return numeFilm + " " + anProductie + " " + categorieFilm + " " + this.getClass().getName();
 	}
 
 }
