@@ -51,40 +51,49 @@ public class Fereastra extends JFrame {
 	}
 
 	private void initPanelAlegereFilme() {
-		JLabel lText = new JLabel("Alegeti maxim 5 filme pe care doriti sa le inchiriati\n");
+		JLabel lText = new JLabel("<html>Alegeti maxim 5 filme pe care doriti sa le inchiriati <br> 1Ron/ZI pt DVD si" +
+		                          " " +
+		                          "2 RON/ZI pentru Caseta<br/></html>");
 
-		String[] header = {"Nr. crt.", "Nume", "Gen", "An aparitie", "Ales"};
-		String[][] data = {
-				{"1.", "Dune", "Actiune", "2021", "Da"},
-				{"2.", "Luca", "Animatie", "2020", "Da"},
-				{"3.", "Spider-man", "Aventura", "2021", "Nu"},
-				{"0.", "Film 1", "Actiune", "2020", "Ales"},
-				{"1.", "Film 2", "Actiune", "2020", "Ales"},
-				{"1.", "Film 2", "Actiune", "2020", "Ales"},
-				{"1.", "Film 2", "Actiune", "2020", "Ales"},
-				{"1.", "Film 2", "Actiune", "2020", "Ales"},
-				{"1.", "Film 2", "Actiune", "2020", "Ales"},
-				{"9.", "Film 10", "Actiune", "2020", "Ales"}
-		};
-		JTable tabel = new JTable(data, header);
+		String[] capTabel = {"Nr. crt.", "Nume", "An productie", "Categorie film", "Tip film", "Ales"};
+//		String[][] data = {
+//				{"1.", "Dune", "Actiune", "2021", "True"},
+//				{"2.", "Luca", "Animatie", "2020", "False"},
+//				{"3.", "Spider-man", "Aventura", "2021", "True"},
+//				{"0.", "Film 1", "Actiune", "2020", "True"},
+//				{"1.", "Film 2", "Actiune", "2020", "True"},
+//				{"1.", "Film 2", "Actiune", "2020", "True"},
+//				{"1.", "Film 2", "Actiune", "2020", "True"},
+//				{"1.", "Film 2", "Actiune", "2020", "True"},
+//				{"1.", "Film 2", "Actiune", "2020", "True"},
+//				{"9.", "Film 10", "Actiune", "2020", "False"}
+//		};
+
+		Object[][] dateTabel = ListaFilme.getInstance().getlistaFilmeClient();
+		JTable tabel = new JTable(dateTabel, capTabel);
+		tabel.getTableHeader().setReorderingAllowed(false);
+		tabel.getTableHeader().setResizingAllowed(false);
+		tabel.setPreferredScrollableViewportSize(tabel.getPreferredSize());
+
 		JLabel lSort = new JLabel("Sortati dupa: ");
-
 		JRadioButton rbGen, rbAnProd;
 		rbGen = new JRadioButton("Gen: ");
 		rbAnProd = new JRadioButton("An productie: ");
 		ButtonGroup bg = new ButtonGroup();
 		bg.add(rbGen);
 		bg.add(rbAnProd);
-		JPanel pButSortare = new JPanel(new GridLayout(2, 2));
-		pButSortare.setPreferredSize(new Dimension(100, 100));
+		JPanel pButSortare = new JPanel(new GridLayout(3, 2));
+		pButSortare.setPreferredSize(new Dimension(250, 150));
 		JComboBox<CategorieFilm> cbGen = new JComboBox<>(CategorieFilm.values());
+		pButSortare.add(lSort);
+		pButSortare.add(new JLabel(""));
 		pButSortare.add(rbGen);
 		pButSortare.add(cbGen);
 		pButSortare.add(rbAnProd);
 		pButSortare.add(new JTextField(4));
 
 		JScrollPane sp = new JScrollPane(tabel);
-		sp.setPreferredSize(new Dimension(300, 150));
+		sp.setPreferredSize(new Dimension(350, 200));
 
 		JPanel pButoane = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JButton bRenuntati = new JButton("Inchideti");
@@ -93,7 +102,7 @@ public class Fereastra extends JFrame {
 
 		getContentPane().removeAll();
 		getContentPane().add(lText, BorderLayout.NORTH);
-		getContentPane().add(sp, BorderLayout.WEST);
+		getContentPane().add(sp, BorderLayout.CENTER);
 		getContentPane().add(pButSortare, BorderLayout.EAST);
 		getContentPane().add(pButoane, BorderLayout.SOUTH);
 
