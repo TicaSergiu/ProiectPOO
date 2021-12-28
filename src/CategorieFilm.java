@@ -1,8 +1,8 @@
 public enum CategorieFilm {
 	ACTIUNE,
 	ANIMATIE,
-	GROAZA,
 	COMEDIE,
+	GROAZA,
+	MISTER,
 	SF,
-	ISTORIC
 }
