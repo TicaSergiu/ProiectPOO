@@ -30,11 +30,28 @@ public class Film {
 		return this.categorieFilm;
 	}
 
+	public void scadeNrCopii() {
+		this.nrCopii--;
+	}
+
+	public int getPretFilm() {
+		return this.pretFilm;
+	}
+
+	public void setNumeActualizare() {
+		numeFilm = numeFilm.replace(" ", "_");
+	}
+
 	/**
 	 * @return Tipul de film, <code>Dvd</code> sau <code>Caseta</code>
 	 */
 	public String getTipFilm() {
 		return this.getClass().getName().substring(4);
+	}
+
+	public String toStringFisier() {
+		return numeFilm + " " + anProductie + " " + nrCopii + " " + categorieFilm + " " +
+		       getClass().getName().substring(4);
 	}
 
 	@Override
