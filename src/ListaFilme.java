@@ -43,11 +43,7 @@ public class ListaFilme {
 				}
 
 				CategorieFilm categorieFilm = CategorieFilm.valueOf(st.nextToken());
-				if (st.nextToken().matches("Dvd")) {
-					lista.add(new FilmDvd(nrCopii, anProductie, numeFilm, categorieFilm));
-				} else {
-					lista.add(new FilmCaseta(nrCopii, anProductie, numeFilm, categorieFilm));
-				}
+				lista.add(new Film(nrCopii, anProductie, numeFilm, categorieFilm, st.nextToken()));
 			}
 		}
 
@@ -76,8 +72,12 @@ public class ListaFilme {
 		return filmeSelectate.size();
 	}
 
-	public Film getFilm(int index) {
+	public Film getFilmSelectat(int index) {
 		return filmeSelectate.get(index);
+	}
+
+	public List<Film> getFilmeSelectate() {
+		return filmeSelectate;
 	}
 
 	public void actualizeazaStoc() {
@@ -105,7 +105,7 @@ public class ListaFilme {
 		return suma;
 	}
 
-	public Film getFilm(String numeFilm, String tipFilm) {
+	public Film getFilmSelectat(String numeFilm, String tipFilm) {
 		for (Film f : lista) {
 			if (numeFilm.equals(f.getNumeFilm()) && tipFilm.equals(f.getTipFilm())) {
 				return f;

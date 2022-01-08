@@ -1,15 +1,44 @@
-public class Abonament {
-	private static int nrAbonamente = 0;
+import java.io.Serializable;
+import java.util.Random;
+
+public class Abonament implements Serializable {
 	private int nrAbonat;
-	private Persoana persoana;
-	//8 luni sau 12 luni
+	private String nume;
+	private String prenume;
+	private String serieCI;
+	private String nrCI;
+	private String nrTelefon;
+	// 8 luni sau 12 luni
 	private int tipAbonament;
 
-	public Abonament(Persoana persoana, int tipAbonament) {
-		this.persoana = persoana;
+	Abonament(String nume, String prenume, String serieCI, String nrCI, String nrTelefon, int tipAbonament) {
+		this.nume = nume;
+		this.prenume = prenume;
+		this.serieCI = serieCI;
+		this.nrCI = nrCI;
+		this.nrTelefon = nrTelefon;
 		this.tipAbonament = tipAbonament;
-		this.nrAbonat = nrAbonamente;
-		nrAbonamente++;
+		this.nrAbonat = new Random().nextInt(1000, 10000);
+	}
+
+	public int getNrAbonat() {
+		return nrAbonat;
+	}
+
+	public String getSerieCI() {
+		return serieCI;
+	}
+
+	public String getNrCI() {
+		return nrCI;
+	}
+
+	@Override
+	public String toString() {
+		String sb = "Numar abonament: " + nrAbonat + "\n" + "Durata abonament: " + tipAbonament + " luni" + "\n" +
+		            "Nume: " + nume + "\n" + "Prenume: " + prenume + "\n" + "Serie CI: " + serieCI + "\n" +
+		            "Numar CI: " + nrCI + "\n" + "Numar telefon: " + nrTelefon + "\n";
+		return sb;
 	}
 
 }

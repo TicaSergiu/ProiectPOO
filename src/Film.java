@@ -1,16 +1,29 @@
 public class Film {
 	private final double TAXA_TERMEN_DEPASIT = 1.5;
 	private final double TAXA_PIERDERE_FILM = 2;
-	protected int pretFilm;
+	private int pretFilm;
 	private int nrCopii;
 	private int anProductie;
 	private String numeFilm;
+	private String tipFilm;
 	private CategorieFilm categorieFilm;
 
-	public Film(int nrCopii, int anProductie, String numeFilm, CategorieFilm categorieFilm) {
+	public Film(int nrCopii, int anProductie, String numeFilm, CategorieFilm categorieFilm, String tipFilm) {
 		this.nrCopii = nrCopii;
 		this.anProductie = anProductie;
 		this.numeFilm = numeFilm;
+		this.categorieFilm = categorieFilm;
+		this.tipFilm = tipFilm;
+		if (this.tipFilm.equals("Caseta")) {
+			this.pretFilm = 1;
+		} else {
+			this.pretFilm = 2;
+		}
+	}
+
+	public Film(String numeFilm, int anProductie, CategorieFilm categorieFilm) {
+		this.numeFilm = numeFilm;
+		this.anProductie = anProductie;
 		this.categorieFilm = categorieFilm;
 	}
 
@@ -46,17 +59,20 @@ public class Film {
 	 * @return Tipul de film, <code>Dvd</code> sau <code>Caseta</code>
 	 */
 	public String getTipFilm() {
-		return this.getClass().getName().substring(4);
+		return tipFilm;
 	}
 
 	public String toStringFisier() {
-		return numeFilm + " " + anProductie + " " + nrCopii + " " + categorieFilm + " " +
-		       getClass().getName().substring(4);
+		return numeFilm + " " + anProductie + " " + nrCopii + " " + categorieFilm + " " + tipFilm;
+	}
+
+	public String toStringImprumut() {
+		return numeFilm.replace(" ", "_") + " " + anProductie + " " + categorieFilm + " " + tipFilm;
 	}
 
 	@Override
 	public String toString() {
-		return numeFilm + " " + anProductie + " " + categorieFilm + " " + this.getClass().getName().substring(4);
+		return numeFilm + " " + anProductie + " " + categorieFilm + " " + tipFilm;
 	}
 
 }
