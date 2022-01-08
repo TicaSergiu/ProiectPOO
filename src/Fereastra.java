@@ -34,6 +34,8 @@ public class Fereastra extends JFrame {
 	private JButton bPlatiti, bReturnati, bInchiriazaFilmeAlese;
 	// Componente folosite in fereastra casierului
 	private JButton bRezRetur, bCreeazaCont;
+	// Componente folosite in fereastra administratoului
+	private JButton bSalveaza, bAdaugaRand, bEliminaRand;
 
 	Fereastra(String titlu) {
 		super(titlu);
@@ -115,9 +117,7 @@ public class Fereastra extends JFrame {
 		JLabel lText = new JLabel(
 				"<html>Alegeti maxim 5 filme pe care doriti sa le inchiriati <br> 1 RON/ZI pt DVD si" +
 				" 2 RON/ZI pentru Caseta</html>");
-		String[] numeColoane = ListaFilme.getInstance().getNumeColoane();
-		Object[][] dateTabel = ListaFilme.getInstance().getlistaFilmeClient();
-		tabelFilme = new TabelFilme(dateTabel, numeColoane);
+		tabelFilme = new TabelFilme(PrelucreazaFilmeTabel.prelucreazaFilme(), false);
 		JScrollPane sp = new JScrollPane(tabelFilme);
 		sp.setPreferredSize(new Dimension(350, 200));
 
@@ -326,7 +326,53 @@ public class Fereastra extends JFrame {
 	}
 
 	private void initPanelAdministrator() {
+		//editati filme
+		String[] numeColoane = {"Nume film", "An productie", "Nr. copii", "Gen", "Tip film"};
+		Object[][] dateTabel = ListaFilme.getInstance().getListaFilmeAdministrator();
+		tabelFilme = new TabelFilme(PrelucreazaFilmeTabel.prelucreazaFilme(), true);
+		JScrollPane sp = new JScrollPane(tabelFilme);
+		bSalveaza = new JButton("Salvati tabel");
+		bAdaugaRand = new JButton("Adaugati rand");
+		bEliminaRand = new JButton("Sterge rand");
 
+		bAdaugaRand.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				tabelFilme.adaugaLinie();
+			}
+		});
+		bEliminaRand.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				tabelFilme.stergeLinie();
+			}
+		});
+		bSalveaza.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				tabelFilme.salveazaTabel();
+			}
+		});
+
+		JPanel pFilm = new JPanel();
+		pFilm.add(sp);
+
+		JPanel pButoaneTabel = new JPanel();
+		pButoaneTabel.add(bAdaugaRand);
+		pButoaneTabel.add(bEliminaRand);
+
+		JPanel pButon = new JPanel();
+		pButon.add(bSalveaza);
+
+		getContentPane().removeAll();
+		getContentPane().add(pFilm, BorderLayout.CENTER);
+		getContentPane().add(pButoaneTabel, BorderLayout.EAST);
+		getContentPane().add(pButon, BorderLayout.SOUTH);
+
+		pack();
 	}
 
 	private class PanelChitanta extends JPanel {
@@ -387,7 +433,7 @@ public class Fereastra extends JFrame {
 			if (e.getSource() == bIntraCont) {
 				String serie = tSerieCI.getText();
 				String nrCI = tNrCI.getText();
-				int id = ContClient.getIdCont(serie, nrCI);
+				int id = ContUtilizator.getIdCont(serie, nrCI);
 				if (id > 1000) {
 					System.out.println(id);
 					initPanelContUtiliz();
@@ -459,7 +505,7 @@ public class Fereastra extends JFrame {
 
 			// Se afiseaza fereastra anterioara
 			if (e.getSource() == bInapoi) {
-				int id = ContClient.getContCurent().getNrAbonament();
+				int id = ContUtilizator.getContCurent().getNrAbonament();
 				if (id > 1000) {
 					initPanelAlegereFilme();
 				} else if (id > 100) {
@@ -470,7 +516,7 @@ public class Fereastra extends JFrame {
 			// Dupa ce utilizatorul plateste se actualizeaza stocul cu filme
 			if (e.getSource() == bPlatiti) {
 				//ListaFilme.getInstance().actualizeazaStoc();
-				ContClient.getContCurent().realizeazaImprumut(ListaFilme.getInstance().getFilmeSelectate());
+				ContUtilizator.getContCurent().realizeazaImprumut(ListaFilme.getInstance().getFilmeSelectate());
 				afiseazaMesajInformatie("Ati inchiriat filmele cu succes", "Operatiune reusita");
 				initPanelContUtiliz();
 				return;
@@ -497,10 +543,12 @@ public class Fereastra extends JFrame {
 						// Campurile cu serie, numar si nrTelefon trebuie sa fie completate
 						if (!tSerieCIClientNou.getText().equals("  ") && !tNrCIClientNou.getText().equals("  ") &&
 						    tNrTelCientNou.getText().matches("07[0-9]*")) {
-							ContClient temp = new ContClient(tNumeClientNou.getText(), tPrenumeClientNou.getText(),
-							                                 tSerieCIClientNou.getText(), tNrCIClientNou.getText(),
-							                                 tNrTelCientNou.getText());
-							//temp.scrie(temp);
+							ContUtilizator temp = new ContUtilizator(tNumeClientNou.getText(),
+							                                         tPrenumeClientNou.getText(),
+							                                         tSerieCIClientNou.getText(),
+							                                         tNrCIClientNou.getText(),
+							                                         tNrTelCientNou.getText());
+							temp.scrie(temp);
 							afiseazaMesajInformatie(temp.toString(), "Contul a fost creat");
 						} else {
 							afiseazaMesajEroare("Toate campurile trebuie completate", "Eroare");
@@ -517,7 +565,7 @@ public class Fereastra extends JFrame {
 			}
 
 			if (e.getSource() == bCautaImprumut) {
-				Imprumut temp = ContClient.getClientImprumut(tNrAbonament.getText(), tImprumutID.getText());
+				Imprumut temp = ContUtilizator.getClientImprumut(tNrAbonament.getText(), tImprumutID.getText());
 				if (temp != null) {
 					initPanelRezolvaRetur(temp);
 				} else {

@@ -13,18 +13,18 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ContClient implements Serializable {
+public class ContUtilizator implements Serializable {
 	//Transient = contCurent nu va fi scris pe fisier (serializat)
-	private static transient ContClient contCurent;
+	private static transient ContUtilizator contCurent;
 	private Abonament abonament;
 
-	ContClient(String nume, String prenume, String serieCI, String nrCI, String nrTelefon) {
+	ContUtilizator(String nume, String prenume, String serieCI, String nrCI, String nrTelefon) {
 		this.abonament = new Abonament(nume, prenume, serieCI, nrCI, nrTelefon, 0);
 		System.out.println(abonament.getNrAbonat());
 	}
 
-	public static ContClient creeazaCont(String nume, String prenume, String serieCI, String nrCI, String nrTelefon) {
-		return new ContClient(nume, prenume, serieCI, nrCI, nrTelefon);
+	public static ContUtilizator creeazaCont(String nume, String prenume, String serieCI, String nrCI, String nrTelefon) {
+		return new ContUtilizator(nume, prenume, serieCI, nrCI, nrTelefon);
 	}
 
 	public static int getIdCont(String serieCI, String numarCI) {
@@ -32,7 +32,7 @@ public class ContClient implements Serializable {
 		try {
 			inputStream = new ObjectInputStream(new FileInputStream("assets\\conturi"));
 			while (true) {
-				ContClient temp = (ContClient)inputStream.readObject();
+				ContUtilizator temp = (ContUtilizator)inputStream.readObject();
 				if (temp.getAbonament().getSerieCI().equals(serieCI) && temp.getAbonament().getNrCI().equals(numarCI)) {
 					contCurent = temp;
 					return temp.getNrAbonament();
@@ -44,10 +44,9 @@ public class ContClient implements Serializable {
 		return -1;
 	}
 
-	public static ContClient getContCurent() {
+	public static ContUtilizator getContCurent() {
 		return contCurent;
 	}
-
 
 	public static Imprumut getClientImprumut(String nrAbonament, String nrImprumut) {
 		try {
@@ -80,7 +79,7 @@ public class ContClient implements Serializable {
 		try {
 			inputStream = new ObjectInputStream(new FileInputStream("assets\\conturi"));
 			while (true) {
-				ContClient temp = (ContClient)inputStream.readObject();
+				ContUtilizator temp = (ContUtilizator)inputStream.readObject();
 				if (temp.getNrAbonament() == nrAboament) {
 					return true;
 				}
@@ -110,7 +109,7 @@ public class ContClient implements Serializable {
 		pw.close();
 	}
 
-	public void scrie(ContClient cc) {
+	public void scrie(ContUtilizator cc) {
 
 		try {
 			/*

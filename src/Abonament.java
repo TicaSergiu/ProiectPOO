@@ -35,10 +35,9 @@ public class Abonament implements Serializable {
 
 	@Override
 	public String toString() {
-		String sb = "Numar abonament: " + nrAbonat + "\n" + "Durata abonament: " + tipAbonament + " luni" + "\n" +
-		            "Nume: " + nume + "\n" + "Prenume: " + prenume + "\n" + "Serie CI: " + serieCI + "\n" +
-		            "Numar CI: " + nrCI + "\n" + "Numar telefon: " + nrTelefon + "\n";
-		return sb;
+		return "Numar abonament: " + nrAbonat + "\n" + "Durata abonament: " + tipAbonament + " luni" + "\n" + "Nume: " +
+		       nume + "\n" + "Prenume: " + prenume + "\n" + "Serie CI: " + serieCI + "\n" + "Numar CI: " + nrCI + "\n" +
+		       "Numar telefon: " + nrTelefon + "\n";
 	}
 
 }

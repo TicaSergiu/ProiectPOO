@@ -11,16 +11,15 @@ public class ListaFilme {
 	private static ListaFilme listaFilme;
 	private final int NR_COLOANE_TABEL = 6;
 	private int nrFilmeDisponibile;
-	private String[] numeColoane;
 	private List<Film> lista, filmeSelectate;
 
 	private ListaFilme() throws IOException {
 		nrFilmeDisponibile = 0;
 		lista = new ArrayList<>();
 		filmeSelectate = new ArrayList<>();
-		numeColoane = new String[]{"Nume", "An productie", "Categorie film", "Tip film", "Ales"};
-		BufferedReader in = new BufferedReader(new FileReader("assets\\listaFilme"));
-		String linie;
+		BufferedReader in = new BufferedReader(new FileReader("assets\\ListaFilme"));
+		String linie = in.readLine();
+		//TODO: sa sterg asta ca se creeaza in tabel
 		while ((linie = in.readLine()) != null) {
 			//Folosesc StringTokenizer pentru a fi mai usor de inteles cum se creeaza un film,
 			//din fisier, folosind variabile mai descriptive
@@ -58,6 +57,10 @@ public class ListaFilme {
 			}
 		}
 		return listaFilme;
+	}
+
+	public int getNrFilme() {
+		return lista.size();
 	}
 
 	public void adaugaFilmSelectat(String numeFilm, String tipFilm) {
@@ -115,10 +118,6 @@ public class ListaFilme {
 		return null;
 	}
 
-	public String[] getNumeColoane() {
-		return numeColoane;
-	}
-
 	/**
 	 * Transforma lista filmelor intr-un Object[][] pentru a face un tabel din care
 	 * utilizatorul alege filmele pe care le doreste
@@ -126,7 +125,7 @@ public class ListaFilme {
 	 * @return lista filmelor pentru client
 	 */
 	public Object[][] getlistaFilmeClient() {
-		Object[][] ret = new Object[nrFilmeDisponibile][NR_COLOANE_TABEL];
+		Object[][] ret = new Object[nrFilmeDisponibile][5];
 		int j = 0;
 		for (Film f : lista) {
 			if (f.getNrCopii() > 0) {
@@ -137,6 +136,19 @@ public class ListaFilme {
 				ret[j][4] = Boolean.FALSE;
 				j++;
 			}
+		}
+		return ret;
+	}
+
+	public Object[][] getListaFilmeAdministrator() {
+		Object[][] ret = new Object[lista.size()][6];
+		for (int i = 0; i < lista.size(); i++) {
+			Film f = lista.get(i);
+			ret[i][0] = f.getNumeFilm();
+			ret[i][1] = f.getAnProductie();
+			ret[i][2] = f.getNrCopii();
+			ret[i][3] = f.getCategorieFilm();
+			ret[i][4] = f.getTipFilm();
 		}
 		return ret;
 	}
