@@ -2,23 +2,14 @@ import javax.swing.table.DefaultTableModel;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PrelucreazaFilmeTabel {
 
-	public static DateTabel prelucreazaFilme(boolean administrator) {
+	public static DateTabel prelucreazaFilme() {
 		try {
 			BufferedReader bf = new BufferedReader(new FileReader("assets\\ListaFilme"));
 			//Prima linia este numele coloanelor
-			String[] numeColoane = null;
-			numeColoane = bf.readLine().split(" ");
-			if (!administrator) {
-				List<String> nColoane = new ArrayList<>(List.of(numeColoane));
-				nColoane.add("Ales");
-				numeColoane = nColoane.toArray(new String[0]);
-
-			}
+			String[] numeColoane = bf.readLine().split(" ");
 			for (int i = 0; i < numeColoane.length; i++) {
 				numeColoane[i] = numeColoane[i].replace("_", " ");
 			}
@@ -35,9 +26,6 @@ public class PrelucreazaFilmeTabel {
 				dateFilme[i][2] = film[2];
 				dateFilme[i][3] = film[3];
 				dateFilme[i][4] = film[4];
-				if (!administrator) {
-					dateFilme[i][5] = false;
-				}
 			}
 			return new DateTabel(dateFilme, numeColoane);
 		} catch (IOException ignored) {

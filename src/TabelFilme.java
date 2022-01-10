@@ -19,7 +19,11 @@ public class TabelFilme extends JTable {
 
 	TabelFilme(DefaultTableModel dateTabel, boolean administrator) {
 		super(dateTabel);
-		NR_ULTIM_COLOANA = dateTabel.getColumnCount() - 1;
+		//1. Transform lista numelor coloanelor in Array de String
+		//2. Le fac intr-un tablou cu split
+		//3. Aflu numarul de coloane dupa marimea tabloului
+		//4. Scad unu pentru a putea folosi ultima coloana
+		NR_ULTIM_COLOANA = dateTabel.getColumnCount();
 
 		this.getTableHeader().setReorderingAllowed(false);
 		this.getTableHeader().setResizingAllowed(false);
@@ -32,21 +36,22 @@ public class TabelFilme extends JTable {
 			sortKeys.add(new RowSorter.SortKey(coloanaSortata, SortOrder.ASCENDING));
 			sorter.setSortKeys(sortKeys);
 			sorter.sort();
-		} else {
-			// Face posibila modificarea genului si tipului de film printr-un ComboBox,
-			// pentru a simplifica adaugarea unui film nou
-			JComboBox<String> cbTipFilm = new JComboBox<>();
-			cbTipFilm.addItem("Dvd");
-			cbTipFilm.addItem("Caseta");
-			getColumnModel().getColumn(4).setCellEditor(new DefaultCellEditor(cbTipFilm));
-
-			JComboBox<CategorieFilm> cbCategorii = new JComboBox<>(CategorieFilm.values());
-			getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(cbCategorii));
 		}
 
+		creeazaComboBox();
 
 		this.dateTabel = dateTabel;
 		this.administrator = administrator;
+	}
+
+	private void creeazaComboBox() {
+		JComboBox<String> cbTipFilm = new JComboBox<>();
+		cbTipFilm.addItem("Dvd");
+		cbTipFilm.addItem("Caseta");
+		getColumnModel().getColumn(4).setCellEditor(new DefaultCellEditor(cbTipFilm));
+
+		JComboBox<CategorieFilm> cbCategorii = new JComboBox<>(CategorieFilm.values());
+		getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(cbCategorii));
 	}
 
 	public void salveazaTabel() {
@@ -106,10 +111,6 @@ public class TabelFilme extends JTable {
 		dateTabel.removeRow(getSelectedRow());
 	}
 
-	public int getNR_ULTIM_COLOANA() {
-		return NR_ULTIM_COLOANA;
-	}
-
 	@Override
 	public boolean isCellEditable(int row, int column) {
 		//Doar ultima coloana poate fi editata de catre utilizator pentru ca este un checkBox
@@ -128,5 +129,8 @@ public class TabelFilme extends JTable {
 		return super.getColumnClass(column);
 	}
 
+	public int getNR_ULTIM_COLOANA() {
+		return NR_ULTIM_COLOANA;
+	}
 
 }
