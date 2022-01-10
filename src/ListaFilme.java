@@ -67,6 +67,7 @@ public class ListaFilme {
 		for (Film f : lista) {
 			if (numeFilm.equals(f.getNumeFilm()) && tipFilm.equals(f.getTipFilm())) {
 				filmeSelectate.add(f);
+				return;
 			}
 		}
 	}

@@ -34,7 +34,9 @@ public class Fereastra extends JFrame {
 	private JButton bPlatiti, bReturnati, bInchiriazaFilmeAlese;
 	// Componente folosite in fereastra casierului
 	private JButton bRezRetur, bCreeazaCont;
-	// Componente folosite in fereastra administratoului
+	// Componente folosite in fereastra principala a administratorului
+	private JButton bActualizeazaStoc;
+	// Componente folosite in fereastra de modificare a stocului
 	private JButton bSalveaza, bAdaugaRand, bEliminaRand;
 
 	Fereastra(String titlu) {
@@ -117,7 +119,7 @@ public class Fereastra extends JFrame {
 		JLabel lText = new JLabel(
 				"<html>Alegeti maxim 5 filme pe care doriti sa le inchiriati <br> 1 RON/ZI pt DVD si" +
 				" 2 RON/ZI pentru Caseta</html>");
-		tabelFilme = new TabelFilme(PrelucreazaFilmeTabel.prelucreazaFilme(), false);
+		tabelFilme = new TabelFilme(PrelucreazaFilmeTabel.prelucreazaFilme(false), false);
 		JScrollPane sp = new JScrollPane(tabelFilme);
 		sp.setPreferredSize(new Dimension(350, 200));
 
@@ -326,10 +328,7 @@ public class Fereastra extends JFrame {
 	}
 
 	private void initPanelAdministrator() {
-		//editati filme
-		String[] numeColoane = {"Nume film", "An productie", "Nr. copii", "Gen", "Tip film"};
-		Object[][] dateTabel = ListaFilme.getInstance().getListaFilmeAdministrator();
-		tabelFilme = new TabelFilme(PrelucreazaFilmeTabel.prelucreazaFilme(), true);
+		tabelFilme = new TabelFilme(PrelucreazaFilmeTabel.prelucreazaFilme(true), true);
 		JScrollPane sp = new JScrollPane(tabelFilme);
 		bSalveaza = new JButton("Salvati tabel");
 		bAdaugaRand = new JButton("Adaugati rand");
@@ -373,6 +372,11 @@ public class Fereastra extends JFrame {
 		getContentPane().add(pButon, BorderLayout.SOUTH);
 
 		pack();
+
+	}
+
+	private void initPanelModificaStocFilme() {
+
 	}
 
 	private class PanelChitanta extends JPanel {
@@ -484,7 +488,7 @@ public class Fereastra extends JFrame {
 				for (int i = 0; i < tabelFilme.getRowCount(); i++) {
 					if ((Boolean)tabelFilme.getValueAt(i, tabelFilme.getNR_ULTIM_COLOANA())) {
 						String nume = (String)tabelFilme.getValueAt(i, 0);
-						String tipFilm = (String)tabelFilme.getValueAt(i, 3);
+						String tipFilm = (String)tabelFilme.getValueAt(i, 4);
 						ListaFilme.getInstance().adaugaFilmSelectat(nume, tipFilm);
 					}
 				}
