@@ -18,7 +18,7 @@ public class Abonament implements Serializable {
 		this.nrCI = nrCI;
 		this.nrTelefon = nrTelefon;
 		this.tipAbonament = tipAbonament;
-		this.nrAbonat = new Random().nextInt(1000, 10000);
+		this.nrAbonat = new Random().nextInt(1000, 10001);
 	}
 
 	public int getNrAbonat() {
@@ -35,9 +35,8 @@ public class Abonament implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Numar abonament: " + nrAbonat + "\n" + "Durata abonament: " + tipAbonament + " luni" + "\n" + "Nume: " +
-		       nume + "\n" + "Prenume: " + prenume + "\n" + "Serie CI: " + serieCI + "\n" + "Numar CI: " + nrCI + "\n" +
-		       "Numar telefon: " + nrTelefon + "\n";
+		return nrAbonat + " " + serieCI + " " + nrCI + " " + nume + " " + prenume + " " + nrTelefon + " " +
+		       tipAbonament;
 	}
 
 }

@@ -6,10 +6,10 @@ import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.time.LocalDate;
 
-public class Fereastra extends JFrame {
-	// Componente folosite de toate ferestrele
-	private final JButton bExit, bInapoi, bLogOut;
+public class FereastraCard extends JFrame {
 	private final AscultatorButoane ab;
+	// Componente folosite de toate ferestrele
+	private JButton bLogIn, bExit;
 	// Componente folosite in fereastra de logIn
 	private JFormattedTextField tSerieCI, tNrCI;
 	private JButton bIntraCont;
@@ -36,23 +36,20 @@ public class Fereastra extends JFrame {
 	private JButton bRezRetur, bCreeazaCont;
 	// Componente folosite in fereastra administratoului
 	private JButton bSalveaza, bAdaugaRand, bEliminaRand;
+	private PanelUtilizator panelUtilizator;
+	private PanelCasier panelCasier;
+	private PanelAdministrator panelAdministrator;
 
-	Fereastra(String titlu) {
+	FereastraCard(String titlu) {
 		super(titlu);
 		ab = new AscultatorButoane();
 
-		// Butoane care sunt folosite in mai multe panel-uri
-		bInapoi = new JButton("Inapoi");
-		bExit = new JButton("Exit");
-		bLogOut = new JButton("LogOut");
-		bInapoi.addActionListener(ab);
-		bExit.addActionListener(ab);
-		bLogOut.addActionListener(ab);
-
-		initPanelLogIn();
+		getContentPane().add(new PanelAdministrator(this));
+		//initPanelLogIn();
 
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		pack();
 		setVisible(true);
 	}
 
@@ -74,114 +71,24 @@ public class Fereastra extends JFrame {
 		} catch (ParseException e) {
 			System.err.println(e.getMessage());
 		}
+
 		JLabel lSerieCI = new JLabel("Serie CI:");
 		JLabel lNrCI = new JLabel("Numar CI:");
 
-		bIntraCont = new JButton("Intrati in cont");
-
-		bIntraCont.addActionListener(ab);
+		bLogIn = new JButton("Intrati in cont");
+		bLogIn.addActionListener(ab);
+		bExit = new JButton("Exit");
 
 		JPanel pLogIn = new JPanel(new GridLayout(3, 2, 5, 5));
 		pLogIn.add(lSerieCI);
 		pLogIn.add(tSerieCI);
 		pLogIn.add(lNrCI);
 		pLogIn.add(tNrCI);
-		pLogIn.add(bExit);
-		pLogIn.add(bIntraCont);
+		pLogIn.add(new JButton("Exit"));
+		pLogIn.add(bLogIn);
 
 		getContentPane().removeAll();
 		getContentPane().add(pLogIn);
-
-		pack();
-	}
-
-	private void initPanelContUtiliz() {
-		bInchiriazaFilmeAlese = new JButton("Inchiriati filme");
-		bReturnati = new JButton("Returnati filme");
-
-		bInchiriazaFilmeAlese.addActionListener(ab);
-		bReturnati.addActionListener(ab);
-
-		JPanel pButoane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		pButoane.add(bLogOut);
-		pButoane.add(bReturnati);
-		pButoane.add(bInchiriazaFilmeAlese);
-
-		getContentPane().removeAll();
-		getContentPane().add(pButoane, BorderLayout.CENTER);
-
-		pack();
-	}
-
-	private void initPanelAlegereFilme() {
-		JLabel lText = new JLabel(
-				"<html>Alegeti maxim 5 filme pe care doriti sa le inchiriati <br> 1 RON/ZI pt DVD si" +
-				" 2 RON/ZI pentru Caseta</html>");
-		tabelFilme = new TabelFilme(false);
-		JScrollPane sp = new JScrollPane(tabelFilme);
-		sp.setPreferredSize(new Dimension(350, 200));
-
-		JLabel lSort = new JLabel("Sortati dupa: ");
-
-		rbGen = new JRadioButton("Gen: ");
-		cbGen = new JComboBox<>(CategorieFilm.values());
-		rbAnProd = new JRadioButton("An productie: ");
-		tAnProd = new JTextField(5);
-
-		bInchiriazaFilme = new JButton("Inchiriati");
-		JButton bRenuntati = new JButton("Inchideti");
-
-		ButtonGroup grupButoaneSortare = new ButtonGroup();
-		grupButoaneSortare.add(rbGen);
-		grupButoaneSortare.add(rbAnProd);
-
-		cbGen.addActionListener(ab);
-		rbGen.addActionListener(ab);
-		rbAnProd.addActionListener(ab);
-		tAnProd.addActionListener(ab);
-		bInchiriazaFilme.addActionListener(ab);
-
-		JPanel pButSortare = new JPanel(new GridLayout(3, 2));
-		pButSortare.add(lSort);
-		pButSortare.add(new JLabel(""));
-		pButSortare.add(rbGen);
-		pButSortare.add(cbGen);
-		pButSortare.add(rbAnProd);
-		pButSortare.add(tAnProd);
-
-		JPanel pButoane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		pButoane.add(bRenuntati);
-		pButoane.add(bInchiriazaFilme);
-
-		getContentPane().removeAll();
-		getContentPane().add(lText, BorderLayout.NORTH);
-		getContentPane().add(sp, BorderLayout.CENTER);
-		getContentPane().add(pButSortare, BorderLayout.EAST);
-		getContentPane().add(pButoane, BorderLayout.SOUTH);
-
-		validate();
-		pack();
-	}
-
-	private void initPanelChitanta() {
-		bPlatiti = new JButton("Platiti");
-		JLabel lText = new JLabel("Chitanta");
-
-		bPlatiti.addActionListener(ab);
-
-		JPanel pContinua = new JPanel();
-		pContinua.add(bPlatiti);
-
-		JPanel pInapoi = new JPanel();
-		pInapoi.add(bInapoi);
-
-		PanelChitanta pc = new PanelChitanta();
-
-		getContentPane().removeAll();
-		getContentPane().add(lText, BorderLayout.NORTH);
-		getContentPane().add(pc, BorderLayout.WEST);
-		getContentPane().add(pContinua, BorderLayout.EAST);
-		getContentPane().add(pInapoi, BorderLayout.SOUTH);
 
 		pack();
 	}
@@ -192,7 +99,6 @@ public class Fereastra extends JFrame {
 		bCreeazaCont = new JButton("Creati un cont");
 
 		JPanel pContCasier = new JPanel();
-		pContCasier.add(bLogOut);
 		pContCasier.add(bRezRetur);
 		pContCasier.add(bCreeazaCont);
 
@@ -288,7 +194,6 @@ public class Fereastra extends JFrame {
 		pCreeazaContClient.add(tNrTelCientNou);
 
 		JPanel pButoane = new JPanel();
-		pButoane.add(bInapoi);
 		pButoane.add(bCreezaContNou);
 
 		getContentPane().removeAll();
@@ -415,39 +320,39 @@ public class Fereastra extends JFrame {
 
 
 	private class AscultatorButoane implements ActionListener {
-		//TODO: sa elimin butoanele, ca se adauga la clasa asta la nesfarsit
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// Se iese din program cand se apasa pe buton
 			if (e.getSource() == bExit) {
-				Fereastra.this.dispose();
-				return;
-			}
-
-			if (e.getSource() == bLogOut) {
-				initPanelLogIn();
+				FereastraCard.this.dispose();
 				return;
 			}
 
 			// Se intra intr-un cont si se incarca urmatoarea fereastra
-			if (e.getSource() == bIntraCont) {
+			if (e.getSource() == bLogIn) {
 				String serie = tSerieCI.getText();
 				String nrCI = tNrCI.getText();
-				int id = Cont.getIdCont(serie, nrCI);
-				if (id > 1000) {
-					System.out.println(id);
-					initPanelContUtiliz();
-				} else if (id > 100) {
-					initPanelContCasier();
+				if (serie.equals("OV") && nrCI.equals("111111")) {
+					if (panelAdministrator == null) {
+						panelAdministrator = new PanelAdministrator(FereastraCard.this);
+					}
+					getContentPane().removeAll();
+					getContentPane().add(panelAdministrator);
+					pack();
+					return;
 				} else {
-					initPanelAdministrator();
+					int id = Cont.getIdCont(serie, nrCI);
+					if (id > 1000) {
+						System.out.println(id);
+					} else if (id > 100) {
+						initPanelContCasier();
+					}
 				}
 				return;
 			}
 
 			// Se afiseaza fereastra cu alegerea filmelor
 			if (e.getSource() == bInchiriazaFilmeAlese) {
-				initPanelAlegereFilme();
 				return;
 			}
 
@@ -457,7 +362,6 @@ public class Fereastra extends JFrame {
 				                        "Informatii retur");
 				return;
 			}
-
 			// Se afiseaza Chitanta daca utilizatorul alege intre 1 si 5 filme
 			if (e.getSource() == bInchiriazaFilme) {
 				// Se verifica daca utilizatorul a ales mai mult de 5 filme pe care
@@ -488,7 +392,6 @@ public class Fereastra extends JFrame {
 						ListaFilme.getInstance().adaugaFilmSelectat(nume, tipFilm);
 					}
 				}
-				initPanelChitanta();
 			}
 
 			// Se sorteaza tabelul dupa genul filmului ales
@@ -503,22 +406,11 @@ public class Fereastra extends JFrame {
 				return;
 			}
 
-			// Se afiseaza fereastra anterioara
-			if (e.getSource() == bInapoi) {
-				int id = Cont.getContCurent().getNrAbonament();
-				if (id > 1000) {
-					initPanelAlegereFilme();
-				} else if (id > 100) {
-					initPanelContCasier();
-				}
-			}
-
 			// Dupa ce utilizatorul plateste se actualizeaza stocul cu filme
 			if (e.getSource() == bPlatiti) {
 				//ListaFilme.getInstance().actualizeazaStoc();
 				Cont.getContCurent().realizeazaImprumut(ListaFilme.getInstance().getFilmeSelectate());
 				afiseazaMesajInformatie("Ati inchiriat filmele cu succes", "Operatiune reusita");
-				initPanelContUtiliz();
 				return;
 			}
 
@@ -582,11 +474,11 @@ public class Fereastra extends JFrame {
 		}
 
 		public void afiseazaMesajInformatie(String mesaj, String titlu) {
-			JOptionPane.showMessageDialog(Fereastra.this, mesaj, titlu, JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(FereastraCard.this, mesaj, titlu, JOptionPane.INFORMATION_MESSAGE);
 		}
 
 		public void afiseazaMesajEroare(String mesaj, String titlu) {
-			JOptionPane.showMessageDialog(Fereastra.this, mesaj, titlu, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(FereastraCard.this, mesaj, titlu, JOptionPane.ERROR_MESSAGE);
 		}
 
 	}

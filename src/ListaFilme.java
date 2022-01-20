@@ -21,29 +21,7 @@ public class ListaFilme {
 		String linie = in.readLine();
 		//TODO: sa sterg asta ca se creeaza in tabel
 		while ((linie = in.readLine()) != null) {
-			//Folosesc StringTokenizer pentru a fi mai usor de inteles cum se creeaza un film,
-			//din fisier, folosind variabile mai descriptive
-			StringTokenizer st = new StringTokenizer(linie, " ");
-			while (st.hasMoreTokens()) {
-				//Filmele cu _ in fisier vor fi inlocuite cu spatiu
-				String numeFilm = st.nextToken().replace("_", " ");
-				int nrCopii, anProductie;
 
-				try {
-					anProductie = Integer.parseInt(st.nextToken());
-					nrCopii = Integer.parseInt(st.nextToken());
-					if (nrCopii > 0) {
-						nrFilmeDisponibile++;
-					}
-				} catch (NumberFormatException e) {
-					nrCopii = 0;
-					anProductie = 0;
-					System.out.println("Eroare");
-				}
-
-				CategorieFilm categorieFilm = CategorieFilm.valueOf(st.nextToken());
-				lista.add(new Film(nrCopii, anProductie, numeFilm, categorieFilm, st.nextToken()));
-			}
 		}
 
 	}

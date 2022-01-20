@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Proiect_eInchirieriFilm:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Proiect_eInchirieriFilm_jar</output-path>
+    <root id="archive" name="Proiect_eInchirieriFilm.jar">
+      <element id="module-output" name="Proiect_eInchirieriFilm" />
+    </root>
+  </artifact>
+</component>

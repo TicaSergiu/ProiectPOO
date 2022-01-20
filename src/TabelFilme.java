@@ -2,6 +2,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,17 +16,10 @@ public class TabelFilme extends JTable {
 	private boolean administrator;
 	private RowFilter<Object, Object> filtru;
 	private List<RowSorter.SortKey> sortKeys;
-	private DefaultTableModel dateTabel;
 	private TableRowSorter<TableModel> sorter;
 
-	TabelFilme(DefaultTableModel dateTabel, boolean administrator) {
-		super(dateTabel);
-		//1. Transform lista numelor coloanelor in Array de String
-		//2. Le fac intr-un tablou cu split
-		//3. Aflu numarul de coloane dupa marimea tabloului
-		//4. Scad unu pentru a putea folosi ultima coloana
-		NR_ULTIM_COLOANA = dateTabel.getColumnCount();
-
+	TabelFilme(boolean administrator) {
+		super();
 		this.getTableHeader().setReorderingAllowed(false);
 		this.getTableHeader().setResizingAllowed(false);
 
@@ -38,12 +33,53 @@ public class TabelFilme extends JTable {
 			sorter.sort();
 		}
 
+		prelucreazaFilme();
 		creeazaComboBox();
 
-		this.dateTabel = dateTabel;
+		NR_ULTIM_COLOANA = getModel().getColumnCount() - 1;
 		this.administrator = administrator;
 	}
 
+	private void prelucreazaFilme() {
+		try {
+			BufferedReader bf = new BufferedReader(new FileReader("assets\\ListaFilme"));
+			//Prima linia este numele coloanelor
+			String[] numeColoane = null;
+			numeColoane = bf.readLine().split(" ");
+			if (!administrator) {
+				List<String> nColoane = new ArrayList<>(List.of(numeColoane));
+				nColoane.add("Ales");
+				numeColoane = nColoane.toArray(new String[0]);
+
+			}
+			for (int i = 0; i < numeColoane.length; i++) {
+				numeColoane[i] = numeColoane[i].replace("_", " ");
+			}
+			//Urmatoarele sunt filmele
+			String linie;
+			int n = ListaFilme.getInstance().getNrFilme();
+			Object[][] dateFilme = new Object[n][numeColoane.length];
+			for (int i = 0; i < n; i++) {
+				String[] film = bf.readLine().split(" ");
+				//Prima coloana este cu numele filmului
+				film[0] = film[0].replace("_", " ");
+				dateFilme[i][0] = film[0];
+				dateFilme[i][1] = film[1];
+				dateFilme[i][2] = film[2];
+				dateFilme[i][3] = film[3];
+				dateFilme[i][4] = film[4];
+				if (!administrator) {
+					dateFilme[i][5] = false;
+				}
+			}
+			// In spatele tabelului este un "model" care contine informatii despre randuri si despre coloane, si imi
+			// setez modelul cu filmele din fisier, si asa pot sa adaug si sa elimin randuri la rulare
+			setModel(new DefaultTableModel(dateFilme, numeColoane));
+		} catch (IOException ignored) {
+		}
+	}
+
+	// Face posibila
 	private void creeazaComboBox() {
 		JComboBox<String> cbTipFilm = new JComboBox<>();
 		cbTipFilm.addItem("Dvd");
@@ -57,8 +93,8 @@ public class TabelFilme extends JTable {
 	public void salveazaTabel() {
 		try {
 			PrintWriter pw = new PrintWriter(new FileWriter("assets\\ListaFilme"));
-			for (int i = 0; i < dateTabel.getColumnCount(); i++) {
-				pw.print(dateTabel.getColumnName(i).replace(" ", "_") + " ");
+			for (int i = 0; i < getModel().getColumnCount(); i++) {
+				pw.print(getModel().getColumnName(i).replace(" ", "_") + " ");
 			}
 			pw.println();
 			for (int i = 0; i < dataModel.getRowCount(); i++) {
@@ -81,8 +117,8 @@ public class TabelFilme extends JTable {
 				pw.println();
 				pw.flush();
 			}
+			pw.close();
 		} catch (IOException ignored) {
-
 		}
 	}
 
@@ -103,12 +139,14 @@ public class TabelFilme extends JTable {
 		}
 	}
 
-	public void adaugaLinie() {
-		dateTabel.addRow(new Object[]{"", "", "", "", ""});
+	public void adaugaRand() {
+		DefaultTableModel tableModel = (DefaultTableModel)getModel();
+		tableModel.addRow(new Object[]{"", "", "", "", ""});
 	}
 
-	public void stergeLinie() {
-		dateTabel.removeRow(getSelectedRow());
+	public void eliminaRand() {
+		DefaultTableModel tableModel = (DefaultTableModel)getModel();
+		tableModel.removeRow(getSelectedRow());
 	}
 
 	@Override
