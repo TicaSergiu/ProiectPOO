@@ -3,6 +3,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class PanelUtilizator extends JPanel {
 	private JButton bInchiriazaFilmeAlese, bReturnati, bInchiriazaFilme, bPlatiti, bLogOut, bRenuntati;
@@ -15,11 +18,15 @@ public class PanelUtilizator extends JPanel {
 	private MyCardLayout cl;
 	private AscultatorButoane ab;
 	private FereastraCard fereastraPrincipala;
+	private List<Film> filmeAlese;
+	private ContUtilizator contCurent;
 
-	PanelUtilizator(FereastraCard fereastraPrincipala) {
+	PanelUtilizator(FereastraCard fereastraPrincipala, ContUtilizator contCurent) {
 		super();
+		filmeAlese = new ArrayList<>();
 		ab = new AscultatorButoane();
 		cl = new MyCardLayout();
+		this.contCurent = contCurent;
 		this.fereastraPrincipala = fereastraPrincipala;
 
 		setLayout(cl);
@@ -27,18 +34,19 @@ public class PanelUtilizator extends JPanel {
 		initPanelMain();
 		initPanelAlegereFilme();
 		initPanelChitanta();
-
 	}
 
 	private void initPanelMain() {
 		bInchiriazaFilme = new JButton("Inchiriati filme");
 		bReturnati = new JButton("Returnati filme");
+		bLogOut = new JButton("LogOut");
 
+		bLogOut.addActionListener(ab);
 		bInchiriazaFilme.addActionListener(ab);
 		bReturnati.addActionListener(ab);
 
 		pButoaneMain = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		pButoaneMain.add(new JButton("LogOut"));
+		pButoaneMain.add(bLogOut);
 		pButoaneMain.add(bReturnati);
 		pButoaneMain.add(bInchiriazaFilme);
 
@@ -60,7 +68,7 @@ public class PanelUtilizator extends JPanel {
 		bInchiriazaFilmeAlese = new JButton("Inchiriati");
 		bRenuntati = new JButton("Inapoi");
 
-		sp.setPreferredSize(new Dimension(350, 200));
+		sp.setPreferredSize(new Dimension(420, 200));
 
 		ButtonGroup grupButoaneSortare = new ButtonGroup();
 		grupButoaneSortare.add(rbGen);
@@ -120,7 +128,7 @@ public class PanelUtilizator extends JPanel {
 
 	}
 
-	static class Chitanta extends JPanel {
+	class Chitanta extends JPanel {
 		Chitanta() {
 			super();
 			setBackground(Color.WHITE);
@@ -128,14 +136,19 @@ public class PanelUtilizator extends JPanel {
 
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g);
-
-			for (int i = 0; i < ListaFilme.getInstance().getNrFilmeDisponibile(); i++) {
-				Film film = ListaFilme.getInstance().getFilmSelectat(i);
-				g.drawString(film.toString(), 5, i * 20 + 20);
-				g.drawString((film.getPretFilm()) + " Ron/ZI", 280, i * 20 + 20);
+			if (filmeAlese != null) {
+				for (int i = 0; i < filmeAlese.size(); i++) {
+					Film film = filmeAlese.get(i);
+					g.drawString(film.toString(), 5, i * 20 + 20);
+					g.drawString((film.getPretFilm()) + " Ron/ZI", 280, i * 20 + 20);
+				}
+				g.drawString("Data returnarii: " + LocalDate.now().plusDays(7), 5, 360);
+				int pretFilme = 0;
+				for (Film f : filmeAlese) {
+					pretFilme += f.getPretFilm();
+				}
+				g.drawString("Total plata: " + pretFilme * 7 + " RON", 5, 380);
 			}
-			g.drawString("Data returnarii: " + LocalDate.now().plusDays(7), 5, 360);
-			g.drawString("Total plata: " + ListaFilme.getInstance().getCostZilnicFilme() * 7 + " RON", 5, 380);
 		}
 
 		public Dimension getPreferredSize() {
@@ -149,16 +162,14 @@ public class PanelUtilizator extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == bLogOut) {
-				//TODO: Sa fie inapoin logIn
+				fereastraPrincipala.logOut();
 			}
 
 			if (e.getSource() == bRenuntati) {
 				cl.show(PanelUtilizator.this, "Main");
 				// Cand utilizatorul iese din fereastra de inchiriat filmele, se reseteaza toate filmele pe care le-a
 				// ales
-				for (int i = 0; i < tabelFilme.getRowCount(); i++) {
-					tabelFilme.setValueAt(false, i, tabelFilme.getNR_ULTIM_COLOANA());
-				}
+				reseteazaInformatii();
 				fereastraPrincipala.pack();
 				return;
 			}
@@ -174,7 +185,7 @@ public class PanelUtilizator extends JPanel {
 				for (int i = 0; i < tabelFilme.getRowCount(); i++) {
 					// Cast la boolean pentru ca ultima coloana este mereu un checkBox
 					// ce este True sau False
-					if ((Boolean)tabelFilme.getValueAt(i, tabelFilme.getNR_ULTIM_COLOANA())) {
+					if ((Boolean)tabelFilme.getValueAt(i, tabelFilme.getNrIndexUltimaColoana())) {
 						nrFilmeAlese++;
 					}
 				}
@@ -188,10 +199,10 @@ public class PanelUtilizator extends JPanel {
 				}
 				// Se creeaza o lista cu filmele selectate pentru a le folosi in chitanta
 				for (int i = 0; i < tabelFilme.getRowCount(); i++) {
-					if ((Boolean)tabelFilme.getValueAt(i, tabelFilme.getNR_ULTIM_COLOANA())) {
+					if ((Boolean)tabelFilme.getValueAt(i, tabelFilme.getNrIndexUltimaColoana())) {
 						String nume = (String)tabelFilme.getValueAt(i, 0);
-						String tipFilm = (String)tabelFilme.getValueAt(i, 3);
-						ListaFilme.getInstance().adaugaFilmSelectat(nume, tipFilm);
+						String tipFilm = (String)tabelFilme.getValueAt(i, 2);
+						filmeAlese.add(ListaFilme.getListaFilme().getFilm(nume, tipFilm));
 					}
 				}
 				cl.show(PanelUtilizator.this, "Chitanta");
@@ -209,14 +220,19 @@ public class PanelUtilizator extends JPanel {
 				return;
 			}
 			if (e.getSource() == bInchiriazaFilme) {
-				//TODO: sa preiau filmele din tabel care au fost selectate
 				cl.show(PanelUtilizator.this, "TabelFilme");
 				fereastraPrincipala.pack();
 				return;
 			}
 			if (e.getSource() == bPlatiti) {
-				afiseazaMesajInformare("nu a mers");
-				cl.next(PanelUtilizator.this);
+				int idImprumut = new Random().nextInt(1, 1001);
+				ListaImprumut.getListaImprumuturi().adaugaImprumut(
+						new Imprumut(contCurent.getNrAbonat(), idImprumut, filmeAlese));
+				ListaImprumut.getListaImprumuturi().salveazaImprumuturi();
+				ListaFilme.getListaFilme().scadeStoc(filmeAlese);
+				afiseazaMesajInformare("Imprumutul cu id-ul " + idImprumut + " s-a realizat cu succes.");
+				reseteazaInformatii();
+				cl.show(PanelUtilizator.this, "Main");
 				fereastraPrincipala.pack();
 				return;
 			}
@@ -233,6 +249,13 @@ public class PanelUtilizator extends JPanel {
 		public void afiseazaMesajInformare(String mesaj) {
 			JOptionPane.showMessageDialog(fereastraPrincipala, mesaj, "Operatiune reusita",
 			                              JOptionPane.INFORMATION_MESSAGE);
+		}
+
+		private void reseteazaInformatii() {
+			filmeAlese = new ArrayList<>();
+			for (int i = 0; i < tabelFilme.getRowCount(); i++) {
+				tabelFilme.setValueAt(false, i, tabelFilme.getNrIndexUltimaColoana());
+			}
 		}
 
 	}

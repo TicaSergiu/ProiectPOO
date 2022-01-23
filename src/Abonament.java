@@ -21,6 +21,17 @@ public class Abonament implements Serializable {
 		this.nrAbonat = new Random().nextInt(1000, 10001);
 	}
 
+	public Abonament(int nrAbonat, String serieCI, String nrCI, String nume, String prenume, String nrTelefon,
+	                 int tipAbonament) {
+		this.nrAbonat = nrAbonat;
+		this.nume = nume;
+		this.prenume = prenume;
+		this.serieCI = serieCI;
+		this.nrCI = nrCI;
+		this.nrTelefon = nrTelefon;
+		this.tipAbonament = tipAbonament;
+	}
+
 	public int getNrAbonat() {
 		return nrAbonat;
 	}

@@ -8,7 +8,7 @@ public class Film {
 	private String tipFilm;
 	private CategorieFilm categorieFilm;
 
-	public Film(int nrCopii, int anProductie, String numeFilm, CategorieFilm categorieFilm, String tipFilm) {
+	public Film(String numeFilm, int anProductie, int nrCopii, CategorieFilm categorieFilm, String tipFilm) {
 		this.nrCopii = nrCopii;
 		this.anProductie = anProductie;
 		this.numeFilm = numeFilm;
@@ -21,10 +21,20 @@ public class Film {
 		}
 	}
 
-	public Film(String numeFilm, int anProductie, CategorieFilm categorieFilm) {
+	public Film(String numeFilm, int anProductie, CategorieFilm categorieFilm, String tipFilm) {
 		this.numeFilm = numeFilm;
 		this.anProductie = anProductie;
 		this.categorieFilm = categorieFilm;
+		this.tipFilm = tipFilm;
+		if (this.tipFilm.equals("Caseta")) {
+			this.pretFilm = 1;
+		} else {
+			this.pretFilm = 2;
+		}
+	}
+
+	public String toStringImprumut() {
+		return numeFilm.replace(" ", "_") + " " + anProductie + " " + categorieFilm + " " + tipFilm;
 	}
 
 	public int getAnProductie() {
@@ -66,9 +76,6 @@ public class Film {
 		return numeFilm + " " + anProductie + " " + nrCopii + " " + categorieFilm + " " + tipFilm;
 	}
 
-	public String toStringImprumut() {
-		return numeFilm.replace(" ", "_") + " " + anProductie + " " + categorieFilm + " " + tipFilm;
-	}
 
 	@Override
 	public String toString() {

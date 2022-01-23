@@ -14,7 +14,7 @@ public class PanelAdministrator extends JPanel {
 	private JButton bAdaugaRand, bEliminaRand, bSalveazaTabel, bLogOut, bCreeazaContCasier, bModificaFilme;
 	private JButton bCreeazaContNou, bInapoiCont, bInapoiTabel;
 	private JPanel pAranjeazaTabel, pAranjeazaMain, pAranjeazaCasier;
-	private JFormattedTextField tSerieCICasier, tNrCICasier, tNrTelCasier;
+	private JFormattedTextField tSerieCICasier, tNrCICasier, tIdCasier;
 	private JTextField tNumeCasier, tPrenumeCasier;
 
 	PanelAdministrator(FereastraCard fereastraPrincipala) {
@@ -22,7 +22,6 @@ public class PanelAdministrator extends JPanel {
 		ab = new AscultatorButoane();
 		cl = new MyCardLayout();
 		this.fereastraPrincipala = fereastraPrincipala;
-
 
 		setLayout(cl);
 
@@ -83,55 +82,44 @@ public class PanelAdministrator extends JPanel {
 	private void initPanelCreeazaContCasier() {
 		try {
 			MaskFormatter formatterSerieCI = new MaskFormatter("UU");
-			formatterSerieCI.setPlaceholderCharacter(' ');
 			tSerieCICasier = new JFormattedTextField(formatterSerieCI);
-			tSerieCICasier.setColumns(10);
+			tSerieCICasier.setColumns(5);
 
 			MaskFormatter formatterNrCI = new MaskFormatter("######");
-			formatterNrCI.setPlaceholderCharacter(' ');
 			tNrCICasier = new JFormattedTextField(formatterNrCI);
-			tNrCICasier.setColumns(10);
+			tNrCICasier.setColumns(5);
 
-			MaskFormatter formatterNrTel = new MaskFormatter("07########");
-			formatterNrTel.setPlaceholderCharacter(' ');
-			tNrTelCasier = new JFormattedTextField(formatterNrTel);
-			tNrTelCasier.setColumns(10);
+			MaskFormatter idCasier = new MaskFormatter("###");
+			tIdCasier = new JFormattedTextField(idCasier);
+			tIdCasier.setColumns(5);
 
 		} catch (ParseException e) {
 			e.getStackTrace();
 		}
 
-		tNumeCasier = new JTextField(10);
-		tPrenumeCasier = new JTextField(10);
 		bCreeazaContNou = new JButton("Creati cont");
 		bInapoiCont = new JButton("Inapoi");
-		JLabel lNume = new JLabel("Nume:");
-		JLabel lPrenume = new JLabel("Prenume:");
 		JLabel lSerieCI = new JLabel("Serie CI:");
 		JLabel lNrCI = new JLabel("Numar CI:");
-		JLabel lNrTelefon = new JLabel("Numar telefon:");
+		JLabel lIdCasier = new JLabel("ID casier:");
 
 		bCreeazaContNou.addActionListener(ab);
 		bInapoiCont.addActionListener(ab);
 
-		JPanel pCreeazaContClient = new JPanel(new GridLayout(5, 2));
-		pCreeazaContClient.add(lNume);
-		pCreeazaContClient.add(tNumeCasier);
-		pCreeazaContClient.add(lPrenume);
-		pCreeazaContClient.add(tPrenumeCasier);
-		pCreeazaContClient.add(lSerieCI);
-		pCreeazaContClient.add(tSerieCICasier);
-		pCreeazaContClient.add(lNrCI);
-		pCreeazaContClient.add(tNrCICasier);
-		pCreeazaContClient.add(lNrTelefon);
-		pCreeazaContClient.add(tNrTelCasier);
+		JPanel pCreeazaContCasier = new JPanel(new GridLayout(3, 2));
+		pCreeazaContCasier.add(lSerieCI);
+		pCreeazaContCasier.add(tSerieCICasier);
+		pCreeazaContCasier.add(lNrCI);
+		pCreeazaContCasier.add(tNrCICasier);
+		pCreeazaContCasier.add(lIdCasier);
+		pCreeazaContCasier.add(tIdCasier);
 
 		JPanel pButoane = new JPanel();
 		pButoane.add(bInapoiCont);
 		pButoane.add(bCreeazaContNou);
 
 		pAranjeazaCasier = new JPanel(new BorderLayout());
-		pAranjeazaCasier.add(pCreeazaContClient, BorderLayout.CENTER);
+		pAranjeazaCasier.add(pCreeazaContCasier, BorderLayout.CENTER);
 		pAranjeazaCasier.add(pButoane, BorderLayout.SOUTH);
 
 		add(pAranjeazaCasier, "ContNou");
@@ -140,6 +128,9 @@ public class PanelAdministrator extends JPanel {
 	class AscultatorButoane implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			if(e.getSource()==bLogOut){
+				fereastraPrincipala.logOut();
+			}
 			if (e.getSource() == bInapoiCont || e.getSource() == bInapoiTabel) {
 				cl.show(PanelAdministrator.this, "Main");
 				fereastraPrincipala.pack();
@@ -163,10 +154,28 @@ public class PanelAdministrator extends JPanel {
 				return;
 			}
 			if (e.getSource() == bCreeazaContCasier) {
-				System.out.println("cont nou");
 				cl.show(PanelAdministrator.this, "ContNou");
 				fereastraPrincipala.pack();
 				return;
+			}
+			if (e.getSource() == bCreeazaContNou) {
+				if (tSerieCICasier.getText().matches("[A-Z][A-Z]") && tNrCICasier.getText().matches("[1-9][0-9]{5}") &&
+				    tIdCasier.getText().matches("[0-9]{3}")) {
+					int nrID = Integer.parseInt(tIdCasier.getText());
+					String serieCI = tSerieCICasier.getText();
+					String nrCI = tNrCICasier.getText();
+					ManagerConturi.scrieCont(new ContCasier(nrID, serieCI, nrCI));
+					JOptionPane.showMessageDialog(PanelAdministrator.this, "Contul a fost creat", "Operatiune reusita",
+					                              JOptionPane.INFORMATION_MESSAGE);
+					tSerieCICasier.setValue(null);
+					tIdCasier.setValue(null);
+					tNrCICasier.setValue(null);
+					cl.show(PanelAdministrator.this, "Main");
+					fereastraPrincipala.pack();
+				} else {
+					JOptionPane.showMessageDialog(PanelAdministrator.this, "Informatiile introduse sunt gresit",
+					                              "Eroare creare cont", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		}
 

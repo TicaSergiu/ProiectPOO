@@ -1,21 +1,38 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Imprumut {
 	private List<Film> filmeImprumutate;
 	private LocalDate inceputInchiriere;
 	private int nrImprumut;
+	private int nrAbonat;
 
-	Imprumut(List<Film> filmeImprumutate) {
+	/**
+	 * Imprumutul acesta se creeaza cand trebuie creat un nou imprumut si adaugat la lista de imprumuturi
+	 *
+	 * @param nrAbonat         numarul abonatului
+	 * @param filmeImprumutate lista de filme alese de client care urmeaza sa fie imprumutate
+	 */
+	Imprumut(int nrAbonat, int nrImprumut, List<Film> filmeImprumutate) {
 		this.filmeImprumutate = new ArrayList<>(filmeImprumutate);
 		this.inceputInchiriere = LocalDate.now();
-		this.nrImprumut = new Random().nextInt(1, 1000);
+		this.nrAbonat = nrAbonat;
+		this.nrImprumut = nrImprumut;
 	}
 
-	Imprumut(List<Film> filmeImprumutate, LocalDate inceputInchiriere) {
+	/**
+	 * Imprumutul care se preia din fisier si este folosit in lista de imprumuturi<p>
+	 *
+	 * @param nrAbonat          numarul abonatului
+	 * @param nrImprumut        numarul imprumutului
+	 * @param filmeImprumutate  lista cu filmele imprumutate
+	 * @param inceputInchiriere data la care a fost efectuat imprumutul
+	 */
+	Imprumut(int nrAbonat, int nrImprumut, List<Film> filmeImprumutate, LocalDate inceputInchiriere) {
 		this.filmeImprumutate = new ArrayList<>(filmeImprumutate);
+		this.nrAbonat = nrAbonat;
+		this.nrImprumut = nrImprumut;
 		this.inceputInchiriere = inceputInchiriere;
 	}
 
@@ -44,7 +61,18 @@ public class Imprumut {
 
 	@Override
 	public String toString() {
-		return nrImprumut + " " + inceputInchiriere.toString();
+		StringBuilder sb = new StringBuilder();
+		sb.append(nrAbonat);
+		sb.append(" ");
+		sb.append(nrImprumut);
+		sb.append(" ");
+		sb.append(inceputInchiriere.toString());
+		sb.append("\n");
+		for (Film f : filmeImprumutate) {
+			sb.append(f.toStringImprumut());
+			sb.append("\n");
+		}
+		return sb.toString();
 	}
 
 }

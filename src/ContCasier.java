@@ -1,22 +1,17 @@
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
-
-public class ContCasier extends Cont {
+public class ContCasier {
+	private String serieCI;
+	private String nrCI;
 	private int nrID;
 
-	public ContCasier(String serieCI, String nrCI, int nrID) {
-		super(serieCI, nrCI);
+	public ContCasier(int nrID, String serieCI, String nrCI) {
+		this.serieCI = serieCI;
+		this.nrCI = nrCI;
+		this.nrID = nrID;
 	}
 
 	@Override
-	public void scrieCont() {
-		try {
-			PrintWriter pw = new PrintWriter(new FileWriter("conturi.txt"));
-			pw.print(nrID + " " + getSerieCI() + " " + getNrCI());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public String toString() {
+		return nrID + " " + serieCI + " " + nrCI;
 	}
 
 

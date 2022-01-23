@@ -2,8 +2,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,74 +10,80 @@ import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
 public class TabelFilme extends JTable {
-	private final int NR_ULTIM_COLOANA;
+	private final String[] numeColoaneAdmin = new String[]{"Nume", "An Productie", "Nr Copii", "Gen", "Tip"};
+	private final String[] numeColoaneUtilizator = new String[]{"Nume", "An Productie", "Tip", "Gen", "Ales"};
+	private int nrIndexColoana;
 	private boolean administrator;
 	private RowFilter<Object, Object> filtru;
-	private List<RowSorter.SortKey> sortKeys;
 	private TableRowSorter<TableModel> sorter;
+	private ListaFilme listaFilme;
 
 	TabelFilme(boolean administrator) {
 		super();
-		this.getTableHeader().setReorderingAllowed(false);
-		this.getTableHeader().setResizingAllowed(false);
+		listaFilme = ListaFilme.getListaFilme();
 
-		if (!administrator) {
-			sorter = new TableRowSorter<>(this.getModel());
-			this.setRowSorter(sorter);
-			sortKeys = new ArrayList<>();
-			int coloanaSortata = 0;
-			sortKeys.add(new RowSorter.SortKey(coloanaSortata, SortOrder.ASCENDING));
-			sorter.setSortKeys(sortKeys);
-			sorter.sort();
-		}
+		this.administrator = administrator;
+		nrIndexColoana = numeColoaneUtilizator.length - 1;
 
 		prelucreazaFilme();
-		creeazaComboBox();
 
-		NR_ULTIM_COLOANA = getModel().getColumnCount() - 1;
-		this.administrator = administrator;
+		if (this.administrator) {
+			creeazaComboBox();
+		} else {
+			creeazaSortariFilme();
+		}
+
+
+	}
+
+	private void creeazaSortariFilme() {
+		sorter = new TableRowSorter<>(this.getModel());
+		this.setRowSorter(sorter);
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		int coloanaSortata = 0;
+		sortKeys.add(new RowSorter.SortKey(coloanaSortata, SortOrder.ASCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
 	}
 
 	private void prelucreazaFilme() {
-		try {
-			BufferedReader bf = new BufferedReader(new FileReader("assets\\ListaFilme"));
-			//Prima linia este numele coloanelor
-			String[] numeColoane = null;
-			numeColoane = bf.readLine().split(" ");
-			if (!administrator) {
-				List<String> nColoane = new ArrayList<>(List.of(numeColoane));
-				nColoane.add("Ales");
-				numeColoane = nColoane.toArray(new String[0]);
-
+		String[] numeColoane;
+		Object[][] dateFilme;
+		if (administrator) {
+			numeColoane = numeColoaneAdmin;
+			dateFilme = new Object[listaFilme.getNrFilme()][numeColoane.length];
+			for (int i = 0; i < listaFilme.getNrFilme(); i++) {
+				dateFilme[i][0] = listaFilme.getFilm(i).getNumeFilm();
+				dateFilme[i][1] = listaFilme.getFilm(i).getAnProductie();
+				dateFilme[i][2] = listaFilme.getFilm(i).getNrCopii();
+				dateFilme[i][3] = listaFilme.getFilm(i).getCategorieFilm();
+				dateFilme[i][4] = listaFilme.getFilm(i).getTipFilm();
 			}
-			for (int i = 0; i < numeColoane.length; i++) {
-				numeColoane[i] = numeColoane[i].replace("_", " ");
-			}
-			//Urmatoarele sunt filmele
-			String linie;
-			int n = ListaFilme.getInstance().getNrFilme();
-			Object[][] dateFilme = new Object[n][numeColoane.length];
-			for (int i = 0; i < n; i++) {
-				String[] film = bf.readLine().split(" ");
-				//Prima coloana este cu numele filmului
-				film[0] = film[0].replace("_", " ");
-				dateFilme[i][0] = film[0];
-				dateFilme[i][1] = film[1];
-				dateFilme[i][2] = film[2];
-				dateFilme[i][3] = film[3];
-				dateFilme[i][4] = film[4];
-				if (!administrator) {
-					dateFilme[i][5] = false;
+		} else {
+			numeColoane = numeColoaneUtilizator;
+			dateFilme = new Object[listaFilme.getNrFilmeDisponibile()][numeColoane.length];
+			int j = 0;
+			// Trebuie verificate toate filmele din fisier dar doar cele cu cel putin o copie trebuie afisata
+			// utilizatorului
+			for (int i = 0; i < listaFilme.getNrFilme(); i++) {
+				if (listaFilme.getFilm(i).getNrCopii() > 0) {
+					dateFilme[j][0] = listaFilme.getFilm(i).getNumeFilm();
+					dateFilme[j][1] = listaFilme.getFilm(i).getAnProductie();
+					dateFilme[j][2] = listaFilme.getFilm(i).getTipFilm();
+					dateFilme[j][3] = listaFilme.getFilm(i).getCategorieFilm();
+					//Ultima coloana a utilizatorului este un checkbox care are valori boolean
+					dateFilme[j][4] = false;
+					j++;
 				}
 			}
-			// In spatele tabelului este un "model" care contine informatii despre randuri si despre coloane, si imi
-			// setez modelul cu filmele din fisier, si asa pot sa adaug si sa elimin randuri la rulare
-			setModel(new DefaultTableModel(dateFilme, numeColoane));
-		} catch (IOException ignored) {
 		}
+		setModel(new DefaultTableModel(dateFilme, numeColoane));
 	}
 
-	// Face posibila
+	/**
+	 * Modifica coloanele cu TipFilm si Genul filmului sa fie modificate prin ComboBox cand tabelul trebuie arata
+	 * administratorului
+	 */
 	private void creeazaComboBox() {
 		JComboBox<String> cbTipFilm = new JComboBox<>();
 		cbTipFilm.addItem("Dvd");
@@ -88,6 +92,10 @@ public class TabelFilme extends JTable {
 
 		JComboBox<CategorieFilm> cbCategorii = new JComboBox<>(CategorieFilm.values());
 		getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(cbCategorii));
+	}
+
+	public int getNrIndexUltimaColoana() {
+		return nrIndexColoana;
 	}
 
 	public void salveazaTabel() {
@@ -152,23 +160,24 @@ public class TabelFilme extends JTable {
 	@Override
 	public boolean isCellEditable(int row, int column) {
 		//Doar ultima coloana poate fi editata de catre utilizator pentru ca este un checkBox
-		if (!administrator) {
-			return column == NR_ULTIM_COLOANA;
+		if (administrator) {
+			return true;
+		} else {
+			return column == getColumnCount() - 1;
 		}
-		return true;
+
 	}
 
 	@Override
 	public Class<?> getColumnClass(int column) {
-		//Ultima coloana trebuie afisata ca un checkBox daca tabelul trebuie afisat utulizatorului
-		if (!administrator) {
-			return column == NR_ULTIM_COLOANA ? Boolean.class : super.getColumnClass(column);
-		}
-		return super.getColumnClass(column);
-	}
+		if (administrator) {
+			return super.getColumnClass(column);
+		} else {
 
-	public int getNR_ULTIM_COLOANA() {
-		return NR_ULTIM_COLOANA;
+			//Ultima coloana trebuie afisata ca un checkBox daca tabelul trebuie afisat utulizatorului
+			return column == getColumnCount() - 1 ? Boolean.class : super.getColumnClass(column);
+		}
+
 	}
 
 }
