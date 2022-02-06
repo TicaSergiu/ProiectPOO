@@ -84,7 +84,7 @@ public class ManagerConturi {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.err.println("Nu tebuie sa se junga aici");
+		System.err.println("Nu trebuie sa se junga aici");
 		return null;
 	}
 

@@ -8,7 +8,7 @@ public class Film {
 	private String tipFilm;
 	private CategorieFilm categorieFilm;
 
-	public Film(String numeFilm, int anProductie, int nrCopii, CategorieFilm categorieFilm, String tipFilm) {
+	Film(String numeFilm, int anProductie, int nrCopii, CategorieFilm categorieFilm, String tipFilm) {
 		this.nrCopii = nrCopii;
 		this.anProductie = anProductie;
 		this.numeFilm = numeFilm;
@@ -21,7 +21,7 @@ public class Film {
 		}
 	}
 
-	public Film(String numeFilm, int anProductie, CategorieFilm categorieFilm, String tipFilm) {
+	Film(String numeFilm, int anProductie, CategorieFilm categorieFilm, String tipFilm) {
 		this.numeFilm = numeFilm;
 		this.anProductie = anProductie;
 		this.categorieFilm = categorieFilm;
@@ -33,8 +33,13 @@ public class Film {
 		}
 	}
 
-	public String toStringImprumut() {
-		return numeFilm.replace(" ", "_") + " " + anProductie + " " + categorieFilm + " " + tipFilm;
+
+	public double getPretIntarziere() {
+		return pretFilm * TAXA_TERMEN_DEPASIT;
+	}
+
+	public double getPretPierdereFilm() {
+		return pretFilm * TAXA_PIERDERE_FILM;
 	}
 
 	public int getAnProductie() {
@@ -42,44 +47,43 @@ public class Film {
 	}
 
 	public String getNumeFilm() {
-		return this.numeFilm;
+		return numeFilm;
 	}
 
 	public int getNrCopii() {
-		return this.nrCopii;
+		return nrCopii;
 	}
 
 	public CategorieFilm getCategorieFilm() {
-		return this.categorieFilm;
-	}
-
-	public void scadeNrCopii() {
-		this.nrCopii--;
+		return categorieFilm;
 	}
 
 	public int getPretFilm() {
-		return this.pretFilm;
+		return pretFilm;
 	}
 
-	public void setNumeActualizare() {
-		numeFilm = numeFilm.replace(" ", "_");
-	}
-
-	/**
-	 * @return Tipul de film, <code>Dvd</code> sau <code>Caseta</code>
-	 */
 	public String getTipFilm() {
 		return tipFilm;
 	}
 
-	public String toStringFisier() {
-		return numeFilm + " " + anProductie + " " + nrCopii + " " + categorieFilm + " " + tipFilm;
+	public void decrementeazaNrCopii() {
+		this.nrCopii--;
 	}
 
+	public void incrementeazaNrCopii() {
+		nrCopii++;
+	}
 
-	@Override
-	public String toString() {
-		return numeFilm + " " + anProductie + " " + categorieFilm + " " + tipFilm;
+	public String toStringImprumut() {
+		return numeFilm.replace(" ", "_") + " " + anProductie + " " + categorieFilm + " " + tipFilm;
+	}
+
+	public String toStringFisier() {
+		return numeFilm.replace(" ", "_") + " " + anProductie + " " + nrCopii + " " + categorieFilm + " " + tipFilm;
+	}
+
+	public String toStringChitanta() {
+		return numeFilm + " " + " " + categorieFilm + " " + tipFilm;
 	}
 
 }

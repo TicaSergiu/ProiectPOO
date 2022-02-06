@@ -1,19 +1,20 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ListaFilme {
-	private static ListaFilme listaFilme = null;
 	private int nrFilmeDisponibile;
 	private List<Film> lista;
 
-	private ListaFilme() {
+	ListaFilme() {
 		nrFilmeDisponibile = 0;
 		lista = new ArrayList<>();
 		try {
-			BufferedReader bf = new BufferedReader(new FileReader("assets\\ListaFilme"));
+			BufferedReader bf = new BufferedReader(new FileReader("assets\\listaFilme.txt"));
 			String linie;
 			while ((linie = bf.readLine()) != null) {
 				String[] film = linie.split(" ");
@@ -29,24 +30,44 @@ public class ListaFilme {
 
 				lista.add(new Film(nume, anProductie, nrCopii, categorieFilm, tipFilm));
 			}
+			bf.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static ListaFilme getListaFilme() {
-		if (listaFilme == null) {
-			listaFilme = new ListaFilme();
+	public void actualizeazaStoc() {
+		nrFilmeDisponibile = 0;
+		try {
+			PrintWriter pw = new PrintWriter(new FileWriter("assets\\listaFilme.txt"));
+			for (Film film : lista) {
+				if (film.getNrCopii() > 0) {
+					nrFilmeDisponibile++;
+				}
+				pw.println(film.toStringFisier());
+				pw.flush();
+			}
+			pw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-		return listaFilme;
 	}
 
 	public void scadeStoc(List<Film> filmeAlese) {
 		for (Film film : lista) {
 			for (Film filmImprumutat : filmeAlese) {
-				if (film.getNumeFilm().equals(filmImprumutat.getNumeFilm()) &&
-				    film.getTipFilm().equals(filmImprumutat.getTipFilm())) {
-					System.out.println("Scazut");
+				if (filmImprumutat == film) {
+					film.decrementeazaNrCopii();
+				}
+			}
+		}
+	}
+
+	public void adaugaStoc(List<Film> filmeAlese) {
+		for (Film film : lista) {
+			for (Film filmImprumutat : filmeAlese) {
+				if (filmImprumutat == film) {
+					film.incrementeazaNrCopii();
 				}
 			}
 		}
@@ -71,7 +92,7 @@ public class ListaFilme {
 		return nrFilmeDisponibile;
 	}
 
-	public int getNrFilme() {
+	public int getNumarFilme() {
 		return lista.size();
 	}
 

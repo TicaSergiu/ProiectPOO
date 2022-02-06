@@ -5,15 +5,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
 
-public class FereastraCard extends JFrame {
+public class FereastraPrincipala extends JFrame {
 	private final AscultatorButoane ab;
 	private JButton bLogIn, bExit;
 	private JFormattedTextField tSerieCI, tNrCI;
 	private JLabel lSerieCI, lNrCI;
 	private JPanel pLogIn;
 
-	FereastraCard(String titlu) {
-		super(titlu);
+	FereastraPrincipala() {
+		super("Inchiriere filme");
 		ab = new AscultatorButoane();
 
 		initPanelLogIn();
@@ -47,8 +47,10 @@ public class FereastraCard extends JFrame {
 		lNrCI = new JLabel("Numar CI:");
 
 		bLogIn = new JButton("Intrati in cont");
-		bLogIn.addActionListener(ab);
 		bExit = new JButton("Exit");
+
+		bLogIn.addActionListener(ab);
+		bExit.addActionListener(ab);
 
 		pLogIn = new JPanel(new GridLayout(3, 2, 5, 5));
 		pLogIn.add(lSerieCI);
@@ -64,7 +66,7 @@ public class FereastraCard extends JFrame {
 		pack();
 	}
 
-	public void logOut() {
+	public void iesiDinContCurent() {
 		getContentPane().removeAll();
 		getContentPane().add(pLogIn);
 		pack();
@@ -74,8 +76,10 @@ public class FereastraCard extends JFrame {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// Se iese din program cand se apasa pe buton
+			// Nu merge, dar nu stiu de ce
 			if (e.getSource() == bExit) {
-				FereastraCard.this.dispose();
+				System.out.println("afara");
+				FereastraPrincipala.this.dispose();
 				return;
 			}
 
@@ -85,22 +89,22 @@ public class FereastraCard extends JFrame {
 				String nrCI = tNrCI.getText();
 				if (serie.equals("OV") && nrCI.equals("111111")) {
 					getContentPane().removeAll();
-					getContentPane().add(new PanelAdministrator(FereastraCard.this));
+					getContentPane().add(new PanelAdministrator(FereastraPrincipala.this));
 					pack();
 				} else {
 					int id = ManagerConturi.cautaContID(tSerieCI.getText(), tNrCI.getText());
 					if (id > 1000) {
 						ContUtilizator contUtilizator = ManagerConturi.getContUtilizator(id);
 						getContentPane().removeAll();
-						getContentPane().add(new PanelUtilizator(FereastraCard.this, contUtilizator));
+						getContentPane().add(new PanelUtilizator(FereastraPrincipala.this, contUtilizator));
 						pack();
 					} else if (id > 100) {
 						//ContCasier contCasier = ManagerConturi.getContCasier(id);
 						getContentPane().removeAll();
-						getContentPane().add(new PanelCasier(FereastraCard.this));
+						getContentPane().add(new PanelCasier(FereastraPrincipala.this));
 						pack();
 					} else {
-						JOptionPane.showMessageDialog(FereastraCard.this, "Nu a fost gasit contul cu datele introduse",
+						JOptionPane.showMessageDialog(FereastraPrincipala.this, "Nu a fost gasit contul cu datele introduse",
 						                              "Eroare", JOptionPane.ERROR_MESSAGE);
 					}
 				}

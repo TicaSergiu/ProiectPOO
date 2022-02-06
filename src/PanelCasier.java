@@ -4,26 +4,40 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class PanelCasier extends JPanel {
-	private final JButton bLogOut;
+	private Chitanta chitanta;
 	private MyCardLayout cardLayout;
-	private JFormattedTextField tSerieCIClientNou, tNrCIClientNou, tNrTelCientNou, tSerieCI;
-	private JTextField tNrAbonament, tImprumutID, tNumeClientNou, tPrenumeClientNou;
-	private JButton bCautaImprumut, bInapoiContNou, bInapoiRezRetur, bContinuaImprumut, bAltImprumut, bCreezaContNou, bRezRetur, bCreeazaCont;
+	private JFormattedTextField tSerieCIClientNou;
+	private JFormattedTextField tNrCIClientNou;
+	private JFormattedTextField tNrTelCientNou;
+	private JTextField tNrAbonament, tNrImprumut, tNumeClientNou, tPrenumeClientNou;
+	private JButton bCautaImprumut, bInapoiContNou, bInapoiRezRetur, bFinalizeazaRetur, bAltImprumut, bCreezaContNou, bRezRetur, bCreeazaCont, bLogOut;
 	private JCheckBox[] cbFilmeImprumutate;
 	private JComboBox<String> cmbTipAbonament;
-	private FereastraCard fereastraPrincipala;
-	private JPanel pAranjeazaClientNou, pAranjeazaCont, pAranjeazaImprumut;
+	private FereastraPrincipala fereastraPrincipala;
+	private JPanel pAranjeazaClientNou, pAranjeazaCont, pAranjeazaImprumut, pAranjeazaReturnare;
 	private Ascultator ab;
+	private ListaFilme listaFilme;
+	private ListaImprumut listaImprumut;
 	private Imprumut imprumut;
 
-	PanelCasier(FereastraCard fereastraPrincipala) {
+	PanelCasier(FereastraPrincipala fereastraPrincipala) {
 		super();
+
+		this.fereastraPrincipala = fereastraPrincipala;
+		listaFilme = new ListaFilme();
+		listaImprumut = new ListaImprumut();
+
+		cardLayout = new MyCardLayout();
+		imprumut = new Imprumut();
 		ab = new Ascultator();
 		bLogOut = new JButton("LogOut");
-		cardLayout = new MyCardLayout();
-		this.fereastraPrincipala = fereastraPrincipala;
 
 		bLogOut.addActionListener(ab);
 
@@ -32,7 +46,6 @@ public class PanelCasier extends JPanel {
 		initPanelContCasier();
 		initPanelCreeazaContClient();
 		initPanelCautaImprumut();
-		//initPanelRezolvaRetur();
 
 	}
 
@@ -123,7 +136,7 @@ public class PanelCasier extends JPanel {
 		bCautaImprumut = new JButton("Cautati imprumutul");
 		bInapoiRezRetur = new JButton("Inapoi");
 		tNrAbonament = new JTextField(4);
-		tImprumutID = new JTextField(4);
+		tNrImprumut = new JTextField(4);
 
 		bInapoiRezRetur.addActionListener(ab);
 		bCautaImprumut.addActionListener(ab);
@@ -132,7 +145,7 @@ public class PanelCasier extends JPanel {
 		pAlegeClient.add(lIDAbonament);
 		pAlegeClient.add(tNrAbonament);
 		pAlegeClient.add(lIDImprumut);
-		pAlegeClient.add(tImprumutID);
+		pAlegeClient.add(tNrImprumut);
 
 
 		JPanel pButoane = new JPanel();
@@ -147,32 +160,94 @@ public class PanelCasier extends JPanel {
 	}
 
 	private void initPanelRezolvaRetur() {
-		int n = imprumut.getNrFilme();
+		int n = imprumut.gerNrFilmeImprumutate();
 
-		JLabel lText = new JLabel("Selectati filmele care au fost returnate de catre client:");
-		bContinuaImprumut = new JButton("Contiunua");
-		bAltImprumut = new JButton("Cautati alt imprumut");
+		JLabel lText = new JLabel("Daca un film nu a fost returnat de client, va rugam sa debifati casuta respectiva:");
+		bFinalizeazaRetur = new JButton("Finalizati returul");
+		bAltImprumut = new JButton("Inapoi");
 		cbFilmeImprumutate = new JCheckBox[n];
 
 		bAltImprumut.addActionListener(ab);
-		bContinuaImprumut.addActionListener(ab);
-
+		bFinalizeazaRetur.addActionListener(ab);
 
 		JPanel pFilmeImprumutate = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		pFilmeImprumutate.setPreferredSize(new Dimension(200, 150));
 		for (int i = 0; i < n; i++) {
-			cbFilmeImprumutate[i] = new JCheckBox(imprumut.getNumeFilmTip(i));
+			cbFilmeImprumutate[i] = new JCheckBox(imprumut.getNumeFilmSiTip(i));
+			cbFilmeImprumutate[i].addActionListener(ab);
+			cbFilmeImprumutate[i].setSelected(true);
 			pFilmeImprumutate.add(cbFilmeImprumutate[i]);
 		}
 
 		JPanel pButoane = new JPanel();
 		pButoane.add(bAltImprumut);
-		pButoane.add(bContinuaImprumut);
+		pButoane.add(bFinalizeazaRetur);
 
+		chitanta = new Chitanta();
 
+		pAranjeazaReturnare = new JPanel(new BorderLayout());
+		pAranjeazaReturnare.add(lText, BorderLayout.NORTH);
+		pAranjeazaReturnare.add(pFilmeImprumutate, BorderLayout.WEST);
+		pAranjeazaReturnare.add(chitanta, BorderLayout.EAST);
+		pAranjeazaReturnare.add(pButoane, BorderLayout.SOUTH);
+
+		add(pAranjeazaReturnare, "Retur");
 	}
 
-	private void initPanelTerminaRetur() {
+	class Chitanta extends JPanel {
+		private final int latime, inaltime;
+		private long zileInceputInchiriere;
+		private int[] filmeReturnate;
+
+		Chitanta() {
+			setBackground(Color.WHITE);
+			zileInceputInchiriere = ChronoUnit.DAYS.between(imprumut.getInceputInchiriere(), LocalDate.now());
+			latime = 350;
+			inaltime = 400;
+			filmeReturnate = new int[imprumut.gerNrFilmeImprumutate()];
+			Arrays.fill(filmeReturnate, 1);
+		}
+
+		@Override
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			double pretIntarziere = 0;
+			double pretPierdere = 0;
+			for (int i = 0; i < imprumut.gerNrFilmeImprumutate(); i++) {
+				g.setColor(Color.BLACK);
+				if (cbFilmeImprumutate[i].isSelected()) {
+					g.drawString(imprumut.getNumeFilmSiTip(i), 5, i * 20 + 20);
+					g.setColor(Color.GREEN);
+					g.drawString("RETURNAT", 280, i * 20 + 20);
+				} else {
+					filmeReturnate[i] = 0;
+					g.drawString(imprumut.getNumeFilmSiTip(i), 5, i * 20 + 20);
+					g.setColor(Color.RED);
+					g.drawString("PIERDUT", 280, i * 20 + 20);
+				}
+				if (zileInceputInchiriere > 7) {
+					if (filmeReturnate[i] == 1) {
+						pretIntarziere += imprumut.getFilm(i).getPretIntarziere();
+					}
+				}
+				if (filmeReturnate[i] == 0) {
+					pretPierdere += imprumut.getFilm(i).getPretPierdereFilm();
+				}
+			}
+			g.setColor(Color.BLACK);
+			if (zileInceputInchiriere > 7) {
+				pretIntarziere = pretIntarziere * (zileInceputInchiriere - 7);
+				g.drawString("Pret intarziere: " + pretIntarziere + " RON", 5, getHeight() - 20);
+			}
+			if (pretPierdere > 0) {
+				g.drawString("Pret pierdere filme: " + pretPierdere + " RON", 5, getHeight() - 40);
+			}
+		}
+
+		@Override
+		public Dimension getPreferredSize() {
+			return new Dimension(latime, inaltime);
+		}
 
 	}
 
@@ -181,7 +256,7 @@ public class PanelCasier extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == bLogOut) {
-				fereastraPrincipala.logOut();
+				fereastraPrincipala.iesiDinContCurent();
 			}
 			if (e.getSource() == bInapoiContNou || e.getSource() == bInapoiRezRetur) {
 				cardLayout.show(PanelCasier.this, "Principal");
@@ -194,54 +269,114 @@ public class PanelCasier extends JPanel {
 				return;
 			}
 			if (e.getSource() == bCreezaContNou) {
-				if (tNumeClientNou.getText().matches("[A-Z][a-z]*")) {
-					// Prenumele trebuie sa fie de forma:
-					// [A-Z]                    - trebuie sa inceapa cu litera mare
-					// [a-z]*                   - orice numar de litere
-					// ?-(\\p{Upper}[a-z]*)?    - optional, urmatorul prenume trebuie sa inceapa cu litera mare si
-					//                          - intre cele doua sa existe cratima
-					if (tPrenumeClientNou.getText().matches("[A-Z][a-z]*?(-[A-Z][a-z]*)?")) {
-						// Campurile cu serieCI, numarCI si nrTelefon trebuie sa fie completate
-						// Se completeaza automat cu spatiu cand sunt create cu MaskFormatter
-						if (!tSerieCIClientNou.getText().equals("") && !tNrCIClientNou.getText().equals("") &&
-						    tNrTelCientNou.getText().matches("07[0-9]*")) {
-							int durataAbonament = 0;
-							if (cmbTipAbonament.getSelectedIndex() == 0) {
-								durataAbonament = 8;
-							} else {
-								durataAbonament = 12;
-							}
-							ContUtilizator temp = new ContUtilizator(tSerieCIClientNou.getText(),
-							                                         tNrCIClientNou.getText(), tNumeClientNou.getText(),
-							                                         tPrenumeClientNou.getText(),
-							                                         tNrTelCientNou.getText(), durataAbonament);
-							ManagerConturi.scrieCont(temp);
-							afiseazaMesajInformare(temp.toString());
+				if (contNouCreat()) {
+					tNumeClientNou.setText("");
+					tPrenumeClientNou.setText("");
+					tSerieCIClientNou.setValue(null);
+					tNrCIClientNou.setValue(null);
+					tNrTelCientNou.setValue(null);
 
-							tNumeClientNou.setText("");
-							tPrenumeClientNou.setText("");
-							tSerieCIClientNou.setValue(null);
-							tNrCIClientNou.setValue(null);
-							tNrTelCientNou.setValue(null);
-
-							cardLayout.show(PanelCasier.this, "Principal");
-							fereastraPrincipala.pack();
-						} else {
-							afiseazaMesajEroare("Toate campurile trebuie completate");
-						}
-					} else {
-						afiseazaMesajEroare("Prenumele trebuie introdus sub forma:\n Marian-George");
-					}
-				} else {
-					afiseazaMesajEroare("Numele trebuie introdus sub forma:\nPopescu");
+					cardLayout.show(PanelCasier.this, "Principal");
+					fereastraPrincipala.pack();
 				}
+				return;
 			}
 			if (e.getSource() == bRezRetur) {
 				cardLayout.show(PanelCasier.this, "CautImprumut");
 				fereastraPrincipala.pack();
+				return;
 			}
-			if (e.getSource() == bContinuaImprumut) {
-				//TODO: ultima parte cu imrpumutul
+			if (e.getSource() == bCautaImprumut) {
+				int nrAbonat = Integer.parseInt(tNrAbonament.getText());
+				int nrImprumut = Integer.parseInt(tNrImprumut.getText());
+				imprumut = listaImprumut.getImprumut(nrAbonat, nrImprumut);
+				if (imprumut != null) {
+					initPanelRezolvaRetur();
+
+					tNrAbonament.setText("");
+					tNrImprumut.setText("");
+
+					cardLayout.show(PanelCasier.this, "Retur");
+					fereastraPrincipala.pack();
+					return;
+				}
+				afiseazaMesajEroare("Nu s-a gasit imprumutul cautat");
+				return;
+			}
+			if (e.getSource() == bFinalizeazaRetur) {
+				List<Film> filmeReturnate = new ArrayList<>();
+				for (int i = 0; i < imprumut.gerNrFilmeImprumutate(); i++) {
+					if (cbFilmeImprumutate[i].isEnabled()) {
+						filmeReturnate.add(imprumut.getFilm(i));
+					}
+				}
+				listaFilme.adaugaStoc(filmeReturnate);
+				listaFilme.actualizeazaStoc();
+				listaImprumut.stergeImprumut(imprumut);
+				listaImprumut.actualizeazaImprumuturi();
+				afiseazaMesajInformare("Returul a fost realizat cu succes");
+				cardLayout.show(PanelCasier.this, "Principal");
+				fereastraPrincipala.pack();
+				return;
+			}
+			if (e.getSource() == bAltImprumut) {
+				cardLayout.show(PanelCasier.this, "CautImprumut");
+				fereastraPrincipala.pack();
+				return;
+			}
+			for (int i = 0; i < imprumut.gerNrFilmeImprumutate(); i++) {
+				if (e.getSource() == cbFilmeImprumutate[i]) {
+					int alegere = JOptionPane.showConfirmDialog(PanelCasier.this,
+					                                            "Sunteti sigur ca clientul a pierdut filmul?");
+					// 0 inseamna ca s-a apasat YES
+					if (alegere == 0) {
+						cbFilmeImprumutate[i].setEnabled(false);
+					} else {
+						cbFilmeImprumutate[i].setSelected(true);
+					}
+					fereastraPrincipala.pack();
+					chitanta.repaint();
+					return;
+				}
+			}
+		}
+
+		private boolean contNouCreat() {
+			if (tNumeClientNou.getText().matches("[A-Z][a-z]*")) {
+				// Prenumele trebuie sa fie de forma:
+				// [A-Z]                    - trebuie sa inceapa cu litera mare
+				// [a-z]*                   - orice numar de litere
+				// ?-(\\p{Upper}[a-z]*)?    - optional, urmatorul prenume trebuie sa inceapa cu litera mare si
+				//                          - intre cele doua sa existe cratima
+				if (tPrenumeClientNou.getText().matches("[A-Z][a-z]*?(-[A-Z][a-z]*)?")) {
+					// Campurile cu serieCI, numarCI si nrTelefon trebuie sa fie completate
+					// Se completeaza automat cu spatiu cand sunt create cu MaskFormatter
+					if (!tSerieCIClientNou.getText().equals("") && !tNrCIClientNou.getText().equals("") &&
+					    tNrTelCientNou.getText().matches("07[0-9]*")) {
+						int durataAbonament;
+						if (cmbTipAbonament.getSelectedIndex() == 0) {
+							durataAbonament = 8;
+						} else {
+							durataAbonament = 12;
+						}
+						ContUtilizator temp = new ContUtilizator(tSerieCIClientNou.getText(), tNrCIClientNou.getText(),
+						                                         tNumeClientNou.getText(), tPrenumeClientNou.getText(),
+						                                         tNrTelCientNou.getText(), durataAbonament);
+						ManagerConturi.scrieCont(temp);
+						afiseazaMesajInformare(temp.toString());
+						return true;
+
+					} else {
+						afiseazaMesajEroare("Toate campurile trebuie completate");
+						return false;
+					}
+				} else {
+					afiseazaMesajEroare("Prenumele trebuie introdus sub forma:\n Marian-George");
+					return false;
+				}
+			} else {
+				afiseazaMesajEroare("Numele trebuie introdus sub forma:\nPopescu");
+				return false;
 			}
 		}
 

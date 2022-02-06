@@ -1,16 +1,15 @@
-import java.io.Serializable;
 import java.util.Random;
 
-public class Abonament implements Serializable {
+public class Abonament {
 	private int nrAbonat;
 	private String nume;
 	private String prenume;
 	private String serieCI;
 	private String nrCI;
 	private String nrTelefon;
-	// 8 luni sau 12 luni
 	private int tipAbonament;
 
+	// Abonament folosit cand se creeaza un abonament nou
 	Abonament(String nume, String prenume, String serieCI, String nrCI, String nrTelefon, int tipAbonament) {
 		this.nume = nume;
 		this.prenume = prenume;
@@ -21,8 +20,8 @@ public class Abonament implements Serializable {
 		this.nrAbonat = new Random().nextInt(1000, 10001);
 	}
 
-	public Abonament(int nrAbonat, String serieCI, String nrCI, String nume, String prenume, String nrTelefon,
-	                 int tipAbonament) {
+	// Abonament folosit cand se preia din fisierul conturi.txt
+	Abonament(int nrAbonat, String serieCI, String nrCI, String nume, String prenume, String nrTelefon, int tipAbonament) {
 		this.nrAbonat = nrAbonat;
 		this.nume = nume;
 		this.prenume = prenume;
@@ -30,6 +29,22 @@ public class Abonament implements Serializable {
 		this.nrCI = nrCI;
 		this.nrTelefon = nrTelefon;
 		this.tipAbonament = tipAbonament;
+	}
+
+	public String getNume() {
+		return nume;
+	}
+
+	public String getPrenume() {
+		return prenume;
+	}
+
+	public String getNrTelefon() {
+		return nrTelefon;
+	}
+
+	public int getTipAbonament() {
+		return tipAbonament;
 	}
 
 	public int getNrAbonat() {

@@ -10,14 +10,13 @@ public class PanelAdministrator extends JPanel {
 	private TabelFilme tabelFilme;
 	private AscultatorButoane ab;
 	private MyCardLayout cl;
-	private FereastraCard fereastraPrincipala;
+	private FereastraPrincipala fereastraPrincipala;
 	private JButton bAdaugaRand, bEliminaRand, bSalveazaTabel, bLogOut, bCreeazaContCasier, bModificaFilme;
 	private JButton bCreeazaContNou, bInapoiCont, bInapoiTabel;
 	private JPanel pAranjeazaTabel, pAranjeazaMain, pAranjeazaCasier;
 	private JFormattedTextField tSerieCICasier, tNrCICasier, tIdCasier;
-	private JTextField tNumeCasier, tPrenumeCasier;
 
-	PanelAdministrator(FereastraCard fereastraPrincipala) {
+	PanelAdministrator(FereastraPrincipala fereastraPrincipala) {
 		super();
 		ab = new AscultatorButoane();
 		cl = new MyCardLayout();
@@ -44,11 +43,11 @@ public class PanelAdministrator extends JPanel {
 		pAranjeazaMain.add(bCreeazaContCasier);
 		pAranjeazaMain.add(bModificaFilme);
 
-		add(pAranjeazaMain, "Main");
+		add(pAranjeazaMain, "Principal");
 	}
 
 	private void initPanelEditareFilme() {
-		tabelFilme = new TabelFilme(true);
+		tabelFilme = new TabelFilme(true, new ListaFilme());
 		JScrollPane sp = new JScrollPane(tabelFilme);
 		bSalveazaTabel = new JButton("Salvati tabelul");
 		bAdaugaRand = new JButton("Adaugati rand");
@@ -97,11 +96,11 @@ public class PanelAdministrator extends JPanel {
 			e.getStackTrace();
 		}
 
-		bCreeazaContNou = new JButton("Creati cont");
-		bInapoiCont = new JButton("Inapoi");
 		JLabel lSerieCI = new JLabel("Serie CI:");
 		JLabel lNrCI = new JLabel("Numar CI:");
 		JLabel lIdCasier = new JLabel("ID casier:");
+		bCreeazaContNou = new JButton("Creati cont");
+		bInapoiCont = new JButton("Inapoi");
 
 		bCreeazaContNou.addActionListener(ab);
 		bInapoiCont.addActionListener(ab);
@@ -128,11 +127,11 @@ public class PanelAdministrator extends JPanel {
 	class AscultatorButoane implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if(e.getSource()==bLogOut){
-				fereastraPrincipala.logOut();
+			if (e.getSource() == bLogOut) {
+				fereastraPrincipala.iesiDinContCurent();
 			}
 			if (e.getSource() == bInapoiCont || e.getSource() == bInapoiTabel) {
-				cl.show(PanelAdministrator.this, "Main");
+				cl.show(PanelAdministrator.this, "Principal");
 				fereastraPrincipala.pack();
 				return;
 			}
@@ -161,16 +160,19 @@ public class PanelAdministrator extends JPanel {
 			if (e.getSource() == bCreeazaContNou) {
 				if (tSerieCICasier.getText().matches("[A-Z][A-Z]") && tNrCICasier.getText().matches("[1-9][0-9]{5}") &&
 				    tIdCasier.getText().matches("[0-9]{3}")) {
+
 					int nrID = Integer.parseInt(tIdCasier.getText());
 					String serieCI = tSerieCICasier.getText();
 					String nrCI = tNrCICasier.getText();
 					ManagerConturi.scrieCont(new ContCasier(nrID, serieCI, nrCI));
 					JOptionPane.showMessageDialog(PanelAdministrator.this, "Contul a fost creat", "Operatiune reusita",
 					                              JOptionPane.INFORMATION_MESSAGE);
+
 					tSerieCICasier.setValue(null);
 					tIdCasier.setValue(null);
 					tNrCICasier.setValue(null);
-					cl.show(PanelAdministrator.this, "Main");
+
+					cl.show(PanelAdministrator.this, "Principal");
 					fereastraPrincipala.pack();
 				} else {
 					JOptionPane.showMessageDialog(PanelAdministrator.this, "Informatiile introduse sunt gresit",
@@ -178,6 +180,7 @@ public class PanelAdministrator extends JPanel {
 				}
 			}
 		}
+
 
 	}
 

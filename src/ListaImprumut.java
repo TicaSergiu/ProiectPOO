@@ -9,10 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListaImprumut {
-	private static ListaImprumut listaImprumuturi = null;
-	private List<Imprumut> lista = null;
+	private List<Imprumut> lista;
 
-	private ListaImprumut() {
+	ListaImprumut() {
 		lista = new ArrayList<>();
 		try {
 			File fisier = new File("assets\\imprumuturi.txt");
@@ -30,7 +29,7 @@ public class ListaImprumut {
 				while (!(linie = bf.readLine()).equals("")) {
 					valori = linie.split(" ");
 
-					String numeFilm = valori[0];
+					String numeFilm = valori[0].replace("_", " ");
 					int anProductie = Integer.parseInt(valori[1]);
 					CategorieFilm categorieFilm = CategorieFilm.valueOf(valori[2]);
 					String tipFilm = valori[3];
@@ -41,23 +40,43 @@ public class ListaImprumut {
 					lista.add(new Imprumut(nrAbonat, nrImprumut, filme, dataInchiriere));
 				}
 			}
+			bf.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public void adaugaImprumut(Imprumut imprumut) {
+		lista.add(imprumut);
+	}
+
+	public Imprumut getImprumut(int nrAbonat, int nrImprumut) {
+		for (Imprumut imprumut : lista) {
+			if (imprumut.getNrImprumut() == nrImprumut && imprumut.getNrAbonat() == nrAbonat) {
+				return imprumut;
+			}
+		}
+		System.err.println("Nu s-a gasit imprumut");
+		return null;
+	}
+
+	public void salveazaListaImprumut() {
+		try {
+			PrintWriter pw = new PrintWriter(new FileWriter("imprumuturi.txt"));
+			for (Imprumut imprumut : lista) {
+				pw.println(imprumut.toString());
+				pw.flush();
+			}
+			pw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public static ListaImprumut getListaImprumuturi() {
-		if (listaImprumuturi == null) {
-			listaImprumuturi = new ListaImprumut();
-		}
-		return listaImprumuturi;
+	public void stergeImprumut(Imprumut imprumut) {
+		lista.remove(imprumut);
 	}
 
-	public void adaugaImprumut(Imprumut imprumut) {
-		lista.add(imprumut);
-	}
-
-	public void salveazaImprumuturi() {
+	public void actualizeazaImprumuturi() {
 		try {
 			PrintWriter pw = new PrintWriter(new FileWriter("assets\\imprumuturi.txt"));
 			for (Imprumut imprumut : lista) {

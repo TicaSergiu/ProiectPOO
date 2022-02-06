@@ -17,4 +17,11 @@ public class ContUtilizator {
 		return abonament;
 	}
 
+	@Override
+	public String toString() {
+		return "Id abonat: " + abonament.getNrAbonat() + "\n" + "Nume: " + abonament.getNume() + "\n" + "Prenume: " +
+		       abonament.getPrenume() + "\n" + "Serie CI: " + abonament.getSerieCI() + "\n" + "Numar CI: " +
+		       abonament.getNrCI() + "\n" + "Numar Telefon: " + abonament.getNrTelefon() + "\n" + "Durata abonament: " +
+		       abonament.getTipAbonament() + " luni.";
+	}
 }

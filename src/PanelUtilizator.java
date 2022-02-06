@@ -8,24 +8,30 @@ import java.util.List;
 import java.util.Random;
 
 public class PanelUtilizator extends JPanel {
-	private JButton bInchiriazaFilmeAlese, bReturnati, bInchiriazaFilme, bPlatiti, bLogOut, bRenuntati;
-	private JButton bInapoiChitanta;
+	private JButton bInchiriazaFilmeAlese, bReturnati, bInchiriazaFilme, bPlatiti, bLogOut, bRenuntati, bInapoiChitanta;
 	private TabelFilme tabelFilme;
+	private ButtonGroup butoaneSortare;
 	private JRadioButton rbGen, rbAnProductie;
 	private JComboBox cbGen;
 	private JTextField tAnProd;
-	private JPanel pButoaneMain, pAranjament, pChitanta, pAranjareChitanta;
+	private JPanel pButoaneMain;
+	private JPanel pAranjament;
+	private JPanel pAranjareChitanta;
 	private MyCardLayout cl;
 	private AscultatorButoane ab;
-	private FereastraCard fereastraPrincipala;
+	private FereastraPrincipala fereastraPrincipala;
 	private List<Film> filmeAlese;
+	private ListaFilme listaFilme;
+	private ListaImprumut listaImprumut;
 	private ContUtilizator contCurent;
 
-	PanelUtilizator(FereastraCard fereastraPrincipala, ContUtilizator contCurent) {
+	PanelUtilizator(FereastraPrincipala fereastraPrincipala, ContUtilizator contCurent) {
 		super();
 		filmeAlese = new ArrayList<>();
 		ab = new AscultatorButoane();
 		cl = new MyCardLayout();
+		listaFilme = new ListaFilme();
+		listaImprumut = new ListaImprumut();
 		this.contCurent = contCurent;
 		this.fereastraPrincipala = fereastraPrincipala;
 
@@ -57,7 +63,7 @@ public class PanelUtilizator extends JPanel {
 		JLabel lText = new JLabel(
 				"<html>Alegeti maxim 5 filme pe care doriti sa le inchiriati <br> 1 RON/ZI pt DVD si" +
 				" 2 RON/ZI pentru Caseta</html>");
-		tabelFilme = new TabelFilme(false);
+		tabelFilme = new TabelFilme(false, listaFilme);
 		JScrollPane sp = new JScrollPane(tabelFilme);
 		JLabel lSort = new JLabel("Sortati dupa: ");
 
@@ -70,9 +76,9 @@ public class PanelUtilizator extends JPanel {
 
 		sp.setPreferredSize(new Dimension(420, 200));
 
-		ButtonGroup grupButoaneSortare = new ButtonGroup();
-		grupButoaneSortare.add(rbGen);
-		grupButoaneSortare.add(rbAnProductie);
+		butoaneSortare = new ButtonGroup();
+		butoaneSortare.add(rbGen);
+		butoaneSortare.add(rbAnProductie);
 
 		bRenuntati.addActionListener(ab);
 		cbGen.addActionListener(ab);
@@ -139,7 +145,7 @@ public class PanelUtilizator extends JPanel {
 			if (filmeAlese != null) {
 				for (int i = 0; i < filmeAlese.size(); i++) {
 					Film film = filmeAlese.get(i);
-					g.drawString(film.toString(), 5, i * 20 + 20);
+					g.drawString(film.toStringChitanta(), 5, i * 20 + 20);
 					g.drawString((film.getPretFilm()) + " Ron/ZI", 280, i * 20 + 20);
 				}
 				g.drawString("Data returnarii: " + LocalDate.now().plusDays(7), 5, 360);
@@ -162,7 +168,7 @@ public class PanelUtilizator extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (e.getSource() == bLogOut) {
-				fereastraPrincipala.logOut();
+				fereastraPrincipala.iesiDinContCurent();
 			}
 
 			if (e.getSource() == bRenuntati) {
@@ -202,7 +208,7 @@ public class PanelUtilizator extends JPanel {
 					if ((Boolean)tabelFilme.getValueAt(i, tabelFilme.getNrIndexUltimaColoana())) {
 						String nume = (String)tabelFilme.getValueAt(i, 0);
 						String tipFilm = (String)tabelFilme.getValueAt(i, 2);
-						filmeAlese.add(ListaFilme.getListaFilme().getFilm(nume, tipFilm));
+						filmeAlese.add(listaFilme.getFilm(nume, tipFilm));
 					}
 				}
 				cl.show(PanelUtilizator.this, "Chitanta");
@@ -226,11 +232,12 @@ public class PanelUtilizator extends JPanel {
 			}
 			if (e.getSource() == bPlatiti) {
 				int idImprumut = new Random().nextInt(1, 1001);
-				ListaImprumut.getListaImprumuturi().adaugaImprumut(
-						new Imprumut(contCurent.getNrAbonat(), idImprumut, filmeAlese));
-				ListaImprumut.getListaImprumuturi().salveazaImprumuturi();
-				ListaFilme.getListaFilme().scadeStoc(filmeAlese);
-				afiseazaMesajInformare("Imprumutul cu id-ul " + idImprumut + " s-a realizat cu succes.");
+				listaImprumut.adaugaImprumut(new Imprumut(contCurent.getNrAbonat(), idImprumut, filmeAlese));
+				listaImprumut.actualizeazaImprumuturi();
+				listaFilme.scadeStoc(filmeAlese);
+				listaFilme.actualizeazaStoc();
+				tabelFilme.actulizeazaDateTabel();
+				afiseazaMesajInformare("Imprumutul cu id-ul " + idImprumut + " s-a efectuat cu succes.");
 				reseteazaInformatii();
 				cl.show(PanelUtilizator.this, "Main");
 				fereastraPrincipala.pack();
@@ -238,7 +245,6 @@ public class PanelUtilizator extends JPanel {
 			}
 			if (e.getSource() == bReturnati) {
 				afiseazaMesajInformare("Pentru a returna filmele va rugam sa vorbiti cu un casier");
-				return;
 			}
 		}
 
@@ -253,9 +259,9 @@ public class PanelUtilizator extends JPanel {
 
 		private void reseteazaInformatii() {
 			filmeAlese = new ArrayList<>();
-			for (int i = 0; i < tabelFilme.getRowCount(); i++) {
-				tabelFilme.setValueAt(false, i, tabelFilme.getNrIndexUltimaColoana());
-			}
+			tabelFilme.reseteazaFiltru();
+			butoaneSortare.clearSelection();
+			tAnProd.setText("");
 		}
 
 	}

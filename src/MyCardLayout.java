@@ -2,8 +2,8 @@ import java.awt.*;
 
 public class MyCardLayout extends CardLayout {
 
-	// In loc sa fie setata marimea fereastrei de panel-ul cel mai mare, marimea va fi setata de marimea panel-ulului
-	// care este afisat in fereastra
+	// In loc sa fie setata marimea de panel-ul cel mai mare, marimea JFrame-ului va fi setata de marimea
+	// panel-ului care este afisat in fereastra
 	@Override
 	public Dimension preferredLayoutSize(Container parent) {
 		Component current = findCurrentComponent(parent);

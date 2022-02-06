@@ -36,6 +36,14 @@ public class Imprumut {
 		this.inceputInchiriere = inceputInchiriere;
 	}
 
+	Imprumut() {
+		filmeImprumutate = new ArrayList<>();
+	}
+
+	public int getNrAbonat() {
+		return nrAbonat;
+	}
+
 	public int getNrImprumut() {
 		return nrImprumut;
 	}
@@ -44,7 +52,7 @@ public class Imprumut {
 		return inceputInchiriere;
 	}
 
-	public int getNrFilme() {
+	public int gerNrFilmeImprumutate() {
 		return filmeImprumutate.size();
 	}
 
@@ -52,11 +60,17 @@ public class Imprumut {
 		return filmeImprumutate.get(index);
 	}
 
-	public String getNumeFilmTip(int index) {
+	public String getNumeFilmSiTip(int index) {
 		Film temp = filmeImprumutate.get(index);
-		System.out.println(temp.getTipFilm());
 		return temp.getNumeFilm() + "-" + temp.getTipFilm();
+	}
 
+	public double getPretZilnicIntarziere() {
+		double pret = 0;
+		for (Film f : filmeImprumutate) {
+			pret += f.getPretIntarziere();
+		}
+		return pret;
 	}
 
 	@Override
